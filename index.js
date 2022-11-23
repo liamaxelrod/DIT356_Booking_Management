@@ -25,6 +25,9 @@ publisher.publish_topic()
 // Handle errors
 client.on("error", function (error) {
     console.log("Error occurred: " + error);
+    if(err.code == "ENOTFOUND") {
+      console.log("Network error, make sure you have an active internet connection")
+  }
 });
 
 // Notify reconnection
