@@ -1,4 +1,3 @@
-
 const mqtt = require('mqtt')
 
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
@@ -38,7 +37,7 @@ client.on('connect', () => {
 client.on('message', (topic, payload) => {
   console.log('Received Message:', topic, payload.toString())
   var message = payload.toString()
-  if(topic == 'my/test/topic'){
+    if(topic == 'my/test/topic'){
     filterTopic(topic, message)
   }else if(topic1 == '/nodejs/albin'){
     console.log(message)
@@ -62,3 +61,18 @@ client.on('message', (topic, payload) => {
       }
   }
 })
+
+// Handle errors
+client.on("error", function (error) {
+    console.log("Error occurred: " + error);
+});
+
+// Notify reconnection
+client.on("reconnect", function () {
+    console.log("Reconnection starting");
+});
+
+// Notify offline status
+client.on("offline", function () {
+    console.log("Currently offline. Please check internet!");
+});
