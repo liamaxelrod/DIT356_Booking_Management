@@ -15,11 +15,12 @@ const client = mqtt.connect(connectUrl, {
   reconnectPeriod: 1000,
 })
 
+
 //subscriber
 subscriber.subscribe_topic()
 
 //publisher
-publisher.publish_topic()
+//publisher.publish_topic()
 
 
 // Handle errors

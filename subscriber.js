@@ -1,8 +1,19 @@
 const mqtt = require('mqtt')
-const client = mqtt.connect("mqtt://test.mosquitto.org")
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const pipe1 = require('../booking-management/pipe')
 
+const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
+const port = '8883'
+
+const connectUrl = `mqtts://${host}:${port}`
+const client = mqtt.connect(connectUrl, {
+  clientId,
+  clean: true,
+  connectTimeout: 4000,
+  username: 'group6_dentistimo',
+  password: 'dentistimo123!',
+  reconnectPeriod: 1000,
+})
 function subscribe_topic(){
 
     const topic = 'my/test/topic'
