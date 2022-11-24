@@ -1,5 +1,5 @@
 const mqtt = require('mqtt')
-const pipe1 = require('../booking-management/pipe')
+const pipe1 = require('./filterBooking')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
@@ -42,18 +42,10 @@ client.on('message', (topic, payload) => {
   }else if(topic1 == '/nodejs/albin'){
     console.log(message)
   }else{
-    console.log("funkar ej")
+    console.log("Does not work")
   }
-  
   
 
-  function messageFilter(topic, message){
-      if(message.includes("2022/12/20") ){
-          console.log(topic, "Available!!!")
-      }else if(message == "Erik"){
-          console.log(topic, "Erik owes Albin Julmuuuuust!")
-      }
-  }
 })
 
 // Handle errors
