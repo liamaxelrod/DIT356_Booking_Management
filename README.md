@@ -10,7 +10,7 @@ Description... We can mention technologies here e.g."Built with hotdogs, cake"
 
 Diagram
 
-![Logo](./img/Pipe-Filter.png "Pipe-filter Diagram")
+![Logo](./img/Pipe-Filter.jpg "Pipe-filter Diagram")
 
 ## Installation
 
