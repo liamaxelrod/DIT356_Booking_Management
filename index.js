@@ -1,5 +1,10 @@
 const mqtt = require('mqtt')
+<<<<<<< HEAD
 const pipe1 = require('./filterBooking')
+=======
+const subscriber = require('../booking-management/subscriber')
+const publisher = require('../booking-management/publisher')
+>>>>>>> origin/main
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
@@ -13,9 +18,8 @@ const client = mqtt.connect(connectUrl, {
   password: 'dentistimo123!',
   reconnectPeriod: 1000,
 })
-// const topic = '/nodejs/mqtt'
-// const topic1 = '/nodejs/albin'
 
+<<<<<<< HEAD
 const topic = 'my/test/topic'
 const topic1 = '/nodejs/albin'
 client.on('connect', () => {
@@ -47,10 +51,22 @@ client.on('message', (topic, payload) => {
   
 
 })
+=======
+
+//subscriber
+subscriber.subscribe_topic()
+
+//publisher
+//publisher.publish_topic()
+
+>>>>>>> origin/main
 
 // Handle errors
 client.on("error", function (error) {
     console.log("Error occurred: " + error);
+    if(err.code == "ENOTFOUND") {
+      console.log("Network error, make sure you have an active internet connection")
+  }
 });
 
 // Notify reconnection
@@ -61,4 +77,8 @@ client.on("reconnect", function () {
 // Notify offline status
 client.on("offline", function () {
     console.log("Currently offline. Please check internet!");
+});
+
+client.on("close", function() {
+  console.log("Connection closed by client")
 });
