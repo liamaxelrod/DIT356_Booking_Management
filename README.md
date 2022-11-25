@@ -3,8 +3,9 @@
 # Booking Management
 
 # Name
+Booking Management component 
 
-Description... We can mention technologies here e.g."Built with hotdogs, cake"
+Description... 
 
 ## Visuals
 
@@ -23,6 +24,8 @@ Usage, use subheadings if needed
 ## Authors and acknowledgment
 
 Authors
+Albin Karlsson
+Erik Lindmaa
 
 ## License
 
