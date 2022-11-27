@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "mongoose": "^6.7.3",
     "mqtt": "^4.3.7",
     "nodemon": "^2.0.20"
   }

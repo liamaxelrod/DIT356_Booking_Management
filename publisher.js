@@ -28,5 +28,4 @@ function publish_topic(){
 
 }
 
-
 module.exports = {publish_topic}

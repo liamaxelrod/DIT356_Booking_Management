@@ -1,11 +1,11 @@
 const mqtt = require('mqtt')
 
-const pipe1 = require('./filterBooking')
 const subscriber = require('../booking-management/subscriber')
 const publisher = require('../booking-management/publisher')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
+const mongoose = require("mongoose");
 
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
@@ -16,6 +16,18 @@ const client = mqtt.connect(connectUrl, {
   password: 'dentistimo123!',
   reconnectPeriod: 1000,
 })
+
+
+// Set up default mongoose connection
+const mongoDB = "mongodb://127.0.0.1/my_database";
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Get the default connection
+const db = mongoose.connection;
+
+// Bind connection to error event (to get notification of connection errors)
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
 
 
 //subscriber

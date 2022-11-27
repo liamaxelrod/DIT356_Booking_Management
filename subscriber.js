@@ -1,6 +1,6 @@
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
-const pipe1 = require('../booking-management/pipe')
+const pipe1 = require('../booking-management/filterBooking')
 
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
