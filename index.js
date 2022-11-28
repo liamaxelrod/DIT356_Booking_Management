@@ -6,6 +6,7 @@ const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const mongoose = require("mongoose");
+const dentistOffices = require('../booking-management/models/dentistOffice')
 
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
@@ -19,8 +20,22 @@ const client = mqtt.connect(connectUrl, {
 
 
 // Set up default mongoose connection
-const mongoDB = "mongodb://127.0.0.1/my_database";
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+
+var mongoURI = process.env.MONGODB_URI || "mongodb+srv://group6_dentistimo:dentistimo123!@dentistimo.1rd4hln.mongodb.net/test";
+
+// Connect to MongoDB
+mongoose.connect(
+  mongoURI,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  function (err) {
+    if (err) {
+      console.error(`Failed to connect to MongoDB with URI: ${mongoURI}`);
+      console.error(err.stack);
+      process.exit(1);
+    }
+    console.log(`Connected to MongoDB with URI: ${mongoURI}`);
+  }
+);
 
 // Get the default connection
 const db = mongoose.connection;
@@ -29,19 +44,25 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 
-
 //subscriber
 subscriber.subscribe_topic()
 
 //publisher
 //publisher.publish_topic()
 
+const new_office = new dentistOffices({ id: 2 });
+
+// Save the new model instance, passing a callback
+new_office.save((err) => {
+    if (err) return handleError(err);
+    // saved!
+  });
 
 
 // Handle errors
 client.on("error", function (error) {
     console.log("Error occurred: " + error);
-    if(err.code == "ENOTFOUND") {
+    if(error.code == "ENOTFOUND") {
       console.log("Network error, make sure you have an active internet connection")
   }
 });

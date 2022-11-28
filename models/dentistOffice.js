@@ -21,5 +21,6 @@ var dentistOfficeSchema = new Schema({
     }
 });
 
+
 module.exports = mongoose.model('dentistOffices', dentistOfficeSchema);
 
