@@ -18,10 +18,13 @@ const client = mqtt.connect(connectUrl, {
   reconnectPeriod: 1000,
 })
 
-
 // Set up default mongoose connection
 
-var mongoURI = process.env.MONGODB_URI || "mongodb+srv://group6_dentistimo:dentistimo123!@dentistimo.1rd4hln.mongodb.net/test";
+//Remote
+//var mongoURI = process.env.MONGODB_URI ;
+
+//local
+var mongoURI = "mongodb://localhost:27017/Dentistimo";
 
 // Connect to MongoDB
 mongoose.connect(
