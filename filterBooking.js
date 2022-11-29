@@ -1,6 +1,7 @@
 module.exports = { filterTopic, deleteFilter }
 const mongoose = require("mongoose");
 const booking = require("./models/booking");
+const publisher = require('../booking-management/publisher')
 
 //Send to another filter 
 function filterTopic(topic, message) {
@@ -43,14 +44,19 @@ function messageFilter3(topic, message) {
 
 //Delete booking filter
 function deleteFilter(topic, message) {
-    if (message.includes("delete_booking")) {
+    message = JSON.parse(message)
+    if (message.issuance != null) {
         async function deleteBooking() {
-            // Delete the document by its _id
-            const deleteSomeBooking = await booking.deleteOne({_id: "6385dd490677863636b6de76"})
-            console.log(deleteSomeBooking)
-          }
-          deleteBooking();
-    } else {
-        console.log("Doesn't work at all")
+            try {
+                console.log(message.issuance)
+                const deleteSomeBooking = await booking.deleteOne({ issuance: message.issuance })
+                //console.log(deleteSomeBooking)
+                const deletedBookingTopic = 'booking/deletedBooking'
+                publisher.publishDeletedBooking(deletedBookingTopic)
+            } catch (e) {
+                console.log(e.message)
+            }
+        }
+        deleteBooking();
     }
 }

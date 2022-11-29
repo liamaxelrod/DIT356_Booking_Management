@@ -54,13 +54,13 @@ subscriber.subscribe_topic()
 //publisher
 //publisher.publish_topic()
 
-const new_office = new dentistOffices({ id: 2 });
+// const new_office = new dentistOffices({ id: 2 });
 
-// Save the new model instance, passing a callback
-new_office.save((err) => {
-    if (err) return handleError(err);
-    // saved!
-  });
+// // Save the new model instance, passing a callback
+// new_office.save((err) => {
+//     if (err) return handleError(err);
+//     // saved!
+//   });
 
 
 // async function run() {
