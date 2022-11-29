@@ -1,24 +1,33 @@
 module.exports = {filterTopic}
+const mongoose = require('mongoose');
+const dentistOffices = require('../booking-management/models/dentistOffice')
+const newAppointment = require('../booking-management/models/booking')
 
 
 //Send to another filter 
 function filterTopic(topic, message){
-    if(topic == 'my/test/topic'){
-      console.log("Topic filter check")
-      messageFilter(topic, message)
+    message = JSON.parse(message)
+    const appointment = new newAppointment(message);
+    if(topic == 'Booking/newBooking'){
+        appointment.save((err) => {
+            if (err) return handleError(err);
+            // saved!
+          });
+        console.log("Topic filter check")
+        messageFilter(topic, message)
     }else{
         console.log("Doesn't work")
     }
 }
 
-//To check if it doesn't include something specific 
+//To check if it doesn include something specific 
 function messageFilter(topic, message){
-    if(!message.includes("name") ){
-        console.log(message, "No name checker")
-        messageFilter2(topic, message)
-    }else if(!message.includes("contact")){
-        console.log(message, "contact checker")
+    if(message.time == "14:00"){
+        console.log(message.time)
+    }else{
+        console.log("Not working")
     }
+  console.log("It works!")
 }
 
 //To check if it includes something specific  

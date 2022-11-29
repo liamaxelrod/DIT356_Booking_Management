@@ -17,7 +17,7 @@ const client = mqtt.connect(connectUrl, {
 function subscribe_topic(){
 
     const topic = 'my/test/topic'
-    const topic1 = '/nodejs/albin'
+    const topic1 = 'Booking/newBooking'
     
     client.on('connect', () => {
       console.log('Connected')
@@ -33,12 +33,11 @@ function subscribe_topic(){
 }
 
 client.on('message', (topic, payload) => {
-    console.log('Received Message:', topic, payload.toString())
-    var message = payload.toString()
-      if(topic == 'my/test/topic'){
-      pipe1.filterTopic(topic, message)
-    }else if(topic1 == '/nodejs/albin'){
-      console.log(message)
+    //console.log('Received Message:', topic, payload.toString())
+    if(topic == 'my/test/topic'){
+        console.log(message)
+    }else if(topic == 'Booking/newBooking'){
+      pipe1.filterTopic(topic, payload)
     }else{
       console.log("funkar ej")
     }
