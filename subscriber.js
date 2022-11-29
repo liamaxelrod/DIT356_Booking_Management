@@ -18,6 +18,7 @@ function subscribe_topic(){
 
     const topic = 'my/test/topic'
     const topic1 = '/nodejs/albin'
+    const topic2 = 'booking/deleteBooking'
     
     client.on('connect', () => {
       console.log('Connected')
@@ -29,6 +30,10 @@ function subscribe_topic(){
         console.log(`Subscribe to topic '${topic1}'`)
         console.log(clientId)
       })
+      client.subscribe([topic2], () => {
+        console.log(`Subscribe to topic '${topic2}'`)
+        console.log(clientId)
+      })
     })
 }
 
@@ -37,8 +42,11 @@ client.on('message', (topic, payload) => {
     var message = payload.toString()
       if(topic == 'my/test/topic'){
       pipe1.filterTopic(topic, message)
-    }else if(topic1 == '/nodejs/albin'){
+    }else if(topic == '/nodejs/albin'){
       console.log(message)
+    }else if(topic == 'booking/deleteBooking'){
+      console.log(message)
+      pipe1.filterTopic(topic, message)
     }else{
       console.log("funkar ej")
     }
