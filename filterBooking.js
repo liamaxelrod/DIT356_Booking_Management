@@ -40,7 +40,6 @@ function messageFilter2(topic, message){
     }
 }
 
-
 //Print the message
 function messageFilter3(topic, message){
         console.log("It is working perfectly")
