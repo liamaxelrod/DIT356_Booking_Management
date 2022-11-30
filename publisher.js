@@ -28,4 +28,15 @@ function publish_topic(){
 
 }
 
-module.exports = {publish_topic}
+//Post deleted bookings
+function publishDeletedBooking(topic) {
+  const pubMessage = "Booking has succesfully been removed";
+  client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+
+module.exports = {publish_topic, publishDeletedBooking}

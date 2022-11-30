@@ -1,12 +1,13 @@
 const mqtt = require('mqtt')
 
 const subscriber = require('../booking-management/subscriber')
-const publisher = require('../booking-management/publisher')
+//const publisher = require('../booking-management/publisher')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const mongoose = require("mongoose");
-const dentistOffices = require('../booking-management/models/dentistOffice')
+//const dentistOffices = require('../booking-management/models/dentistOffice')
+//const booking = require('../booking-management/models/booking')
 
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
@@ -53,13 +54,13 @@ subscriber.subscribe_topic()
 //publisher
 //publisher.publish_topic()
 
-const new_office = new dentistOffices({ id: 2 });
+// const new_office = new dentistOffices({ id: 2 });
 
-// Save the new model instance, passing a callback
-new_office.save((err) => {
-    if (err) return handleError(err);
-    // saved!
-  });
+// // Save the new model instance, passing a callback
+// new_office.save((err) => {
+//     if (err) return handleError(err);
+//     // saved!
+//   });
 
 
 // Handle errors
