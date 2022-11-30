@@ -9,11 +9,7 @@ function filterTopic(topic, message){
     message = JSON.parse(message)
     const appointment = new newAppointment(message);
     if(topic == 'Booking/newBooking'){
-        appointment.save((err) => {
-            if (err) return handleError(err);
-            // saved!
-          });
-        console.log("Topic filter check")
+        
         messageFilter(topic, message)
     }else{
         console.log("Doesn't work")
@@ -31,13 +27,12 @@ function messageFilter(topic, message){
 }
 
 //To check if it includes something specific  
-function messageFilter2(topic, message){
-    if(message.includes("Albin")){
-        console.log("It is working perfectly")
-        messageFilter3(topic, message)
-    }else{
-        console.log("Doesn't work at all")
-    }
+function filterMakeAppointment(topic, message){
+    appointment.save((err) => {
+        if (err) return handleError(err);
+        // saved!
+      });
+    console.log("The appointment has been made!")
 }
 
 //Print the message
