@@ -18,7 +18,7 @@ function subscribe_topic(){
 
     const topic = 'my/test/topic'
     const topic1 = '/nodejs/albin'
-    const topic2 = 'booking/deleteBooking'
+    const topic2 = 'dentistimo/booking/delete-booking'
     
     client.on('connect', () => {
       console.log('Connected')
@@ -44,20 +44,13 @@ client.on('message', (topic, payload) => {
       pipe1.filterTopic(topic, message)
     }else if(topic == '/nodejs/albin'){
       console.log(message)
-    }else if(topic == 'booking/deleteBooking'){
+    }else if(topic == 'dentistimo/booking/delete-booking'){
       console.log(message)
       pipe1.filterTopic(topic, message)
     }else{
       console.log("funkar ej")
     }
   
-    // function messageFilter(topic, message){
-    //     if(message.includes("2022/12/20") ){
-    //         console.log(topic, "Available!!!")
-    //     }else if(message == "Erik"){
-    //         console.log(topic, "Erik owes Albin Julmuuuuust!")
-    //     }
-    // }
   })
 
 module.exports = {subscribe_topic}

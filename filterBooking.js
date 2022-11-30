@@ -8,7 +8,7 @@ function filterTopic(topic, message) {
     if (topic == 'my/test/topic') {
         console.log("Topic filter check")
         messageFilter(topic, message)
-    } else if (topic == 'booking/deleteBooking') {
+    } else if (topic == 'dentistimo/booking/delete-booking') {
         deleteFilter(topic, message)
     } else {
         console.log("Doesn't work")
@@ -49,9 +49,9 @@ function deleteFilter(topic, message) {
         async function deleteBooking() {
             try {
                 console.log(message.issuance)
-                const deleteSomeBooking = await booking.deleteOne({ issuance: message.issuance })
-                //console.log(deleteSomeBooking)
-                const deletedBookingTopic = 'booking/deletedBooking'
+                //Delete booking with issuance as identifier:
+                await booking.deleteOne({ issuance: message.issuance })
+                const deletedBookingTopic = 'dentistimo/booking/deleted-booking'
                 publisher.publishDeletedBooking(deletedBookingTopic)
             } catch (e) {
                 console.log(e.message)

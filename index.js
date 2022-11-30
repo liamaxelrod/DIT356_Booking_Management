@@ -1,13 +1,13 @@
 const mqtt = require('mqtt')
 
 const subscriber = require('../booking-management/subscriber')
-const publisher = require('../booking-management/publisher')
+//const publisher = require('../booking-management/publisher')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const mongoose = require("mongoose");
-const dentistOffices = require('../booking-management/models/dentistOffice')
-const booking = require('../booking-management/models/booking')
+//const dentistOffices = require('../booking-management/models/dentistOffice')
+//const booking = require('../booking-management/models/booking')
 
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
@@ -61,32 +61,6 @@ subscriber.subscribe_topic()
 //     if (err) return handleError(err);
 //     // saved!
 //   });
-
-
-// async function run() {
-//   // Delete the document by its _id
-//   await booking.findOneAndDelete({"userid": 1})
-// }
-
-// run();
-
-
-// async function findBooking() {
-//   // Delete the document by its _id
-//   const somebooking = await booking.findById("6385d7d20677863636b6de74")
-//   console.log(somebooking)
-// }
-
-// findBooking();
-
-
-// async function deleteBooking() {
-//   // Delete the document by its _id
-//   const deleteSomeBooking = await booking.deleteOne({_id: "6385d7d20677863636b6de74"})
-//   console.log(deleteSomeBooking)
-// }
-
-// deleteBooking();
 
 
 // Handle errors
