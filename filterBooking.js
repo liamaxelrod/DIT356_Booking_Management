@@ -49,7 +49,7 @@ function deleteFilter(topic, message) {
         async function deleteBooking() {
             try {
                 console.log(message.issuance)
-                //Delete booking with issuance as identifier:
+                //Delete booking with issuance as identifier
                 await booking.deleteOne({ issuance: message.issuance })
                 const deletedBookingTopic = 'dentistimo/booking/deleted-booking'
                 publisher.publishDeletedBooking(deletedBookingTopic)
