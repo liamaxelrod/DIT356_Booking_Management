@@ -1,3 +1,5 @@
+module.exports = {subscribe_topic}
+
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const pipe1 = require('../booking-management/filterBooking')
@@ -17,7 +19,7 @@ const client = mqtt.connect(connectUrl, {
 function subscribe_topic(){
 
     const topic = 'my/test/topic'
-    const topic1 = '/nodejs/albin'
+    const topic1 = 'dentistimo/booking/create-booking'
     const topic2 = 'dentistimo/booking/delete-booking'
     
     client.on('connect', () => {
@@ -38,12 +40,11 @@ function subscribe_topic(){
 }
 
 client.on('message', (topic, payload) => {
-    console.log('Received Message:', topic, payload.toString())
-    var message = payload.toString()
-      if(topic == 'my/test/topic'){
-      pipe1.filterTopic(topic, message)
-    }else if(topic == '/nodejs/albin'){
+    //console.log('Received Message:', topic, payload.toString())
+    if(topic == 'my/test/topic'){
       console.log(message)
+    }else if(topic == 'dentistimo/booking/create-booking'){
+      pipe1.filterTopic(topic, payload)
     }else if(topic == 'dentistimo/booking/delete-booking'){
       console.log(message)
       pipe1.filterTopic(topic, message)
@@ -52,5 +53,3 @@ client.on('message', (topic, payload) => {
     }
   
   })
-
-module.exports = {subscribe_topic}

@@ -38,5 +38,20 @@ function publishDeletedBooking(topic) {
   })
 }
 
+//Publish message when a successfull booking has been made
+function publishBookingDate(topic, message) {
+  topic = "dentistimo/booking/succesfull-booking"
+  var pubUserId = message.userid
+  var pubRequestId = message.requestid
+  var pubTime = message.time 
+  var pubMessage = ({"userId": pubUserId, "requestId": pubRequestId, "time": pubTime})
 
-module.exports = {publish_topic, publishDeletedBooking}
+  client.publish(topic, JSON.stringify(pubMessage), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+
+module.exports = {publish_topic, publishDeletedBooking, publishBookingDate}

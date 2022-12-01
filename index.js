@@ -55,7 +55,6 @@ subscriber.subscribe_topic()
 //publisher.publish_topic()
 
 // const new_office = new dentistOffices({ id: 2 });
-
 // // Save the new model instance, passing a callback
 // new_office.save((err) => {
 //     if (err) return handleError(err);
