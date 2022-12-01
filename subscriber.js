@@ -1,3 +1,5 @@
+module.exports = {subscribe_topic}
+
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const pipe1 = require('../booking-management/filterBooking')
@@ -17,12 +19,8 @@ const client = mqtt.connect(connectUrl, {
 function subscribe_topic(){
 
     const topic = 'my/test/topic'
-<<<<<<< HEAD
-    const topic1 = 'Booking/newBooking'
-=======
-    const topic1 = '/nodejs/albin'
+    const topic1 = 'dentistimo/booking/create-booking'
     const topic2 = 'dentistimo/booking/delete-booking'
->>>>>>> origin/main
     
     client.on('connect', () => {
       console.log('Connected')
@@ -42,27 +40,16 @@ function subscribe_topic(){
 }
 
 client.on('message', (topic, payload) => {
-<<<<<<< HEAD
     //console.log('Received Message:', topic, payload.toString())
     if(topic == 'my/test/topic'){
-        console.log(message)
-    }else if(topic == 'Booking/newBooking'){
-      pipe1.filterTopic(topic, payload)
-=======
-    console.log('Received Message:', topic, payload.toString())
-    var message = payload.toString()
-      if(topic == 'my/test/topic'){
-      pipe1.filterTopic(topic, message)
-    }else if(topic == '/nodejs/albin'){
       console.log(message)
+    }else if(topic == 'dentistimo/booking/create-booking'){
+      pipe1.filterTopic(topic, payload)
     }else if(topic == 'dentistimo/booking/delete-booking'){
       console.log(message)
       pipe1.filterTopic(topic, message)
->>>>>>> origin/main
     }else{
       console.log("funkar ej")
     }
   
   })
-
-module.exports = {subscribe_topic}

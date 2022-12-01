@@ -1,79 +1,81 @@
-<<<<<<< HEAD
-module.exports = {filterTopic}
-const mongoose = require('mongoose');
+module.exports = { filterTopic, deleteFilter }
+const mongoose = require("mongoose");
 const dentistOffices = require('../booking-management/models/dentistOffice')
-const newAppointment = require('../booking-management/models/booking')
+const booking = require('../booking-management/models/booking')
+const publisher = require('../booking-management/publisher');
+const { count } = require("../booking-management/models/dentistOffice");
 
 
 //Send to another filter 
 function filterTopic(topic, message){
     message = JSON.parse(message)
-    const appointment = new newAppointment(message);
-    if(topic == 'Booking/newBooking'){
-        
-        messageFilter(topic, message)
-    }else{
-=======
-module.exports = { filterTopic, deleteFilter }
-const mongoose = require("mongoose");
-const booking = require("./models/booking");
-const publisher = require('../booking-management/publisher')
-
-//Send to another filter 
-function filterTopic(topic, message) {
-    if (topic == 'my/test/topic') {
-        console.log("Topic filter check")
-        messageFilter(topic, message)
+    if(topic == 'dentistimo/booking/create-booking'){
+        availabilityFilter(topic, message)
     } else if (topic == 'dentistimo/booking/delete-booking') {
         deleteFilter(topic, message)
     } else {
->>>>>>> origin/main
-        console.log("Doesn't work")
+        console.log("Unable to read topic")
     }
 }
 
-<<<<<<< HEAD
-//To check if it doesn include something specific 
-function messageFilter(topic, message){
-    if(message.time == "14:00"){
-        console.log(message.time)
-    }else{
-        console.log("Not working")
-=======
-//To check if it doesn't include something specific 
-function messageFilter(topic, message) {
-    if (!message.includes("name")) {
-        console.log(message, "No name checker")
-        messageFilter2(topic, message)
-    } else if (!message.includes("contact")) {
-        console.log(message, "contact checker")
->>>>>>> origin/main
+
+//Check time & date is available in databse
+function availabilityFilter(topic, message){
+        async function checkAvailability(message) {
+        try {
+            var checkDate = message.date
+            var checkTime = message.time
+            //Find booking with date and time as identifier
+            booking.findOne({ date: checkDate, time: checkTime }, function (err, checkDate, checkTime) {
+                if(checkDate == null && checkTime == null){
+                    filterMakeAppointment(topic, message)
+                }else{
+                    console.log("It is not available")
+                }});
+        } catch (e) {
+            console.log(e.message)
+        }
     }
-  console.log("It works!")
+    if(message.date == "" || null){
+        console.log("No date")
+    }else{
+        checkAvailability(message);
+    }
 }
 
 //To check if it includes something specific  
-<<<<<<< HEAD
 function filterMakeAppointment(topic, message){
+    var userIdInput = message.userid
+    var keyCount = 0
+    console.log("Testing id", userIdInput)
+    console.log("Testing keycount", keyCount)
+    booking.find({ userid: userIdInput }, function (err, userIdInput) {
+        if(userIdInput != null){
+            keyCount = Object.keys(userIdInput).length;
+            console.log(keyCount)
+            if(keyCount < 2){
+                console.log(keyCount)
+                console.log("Save booking")
+                saveAppointment(topic, message)
+            }else{
+                console.log(keyCount)
+                console.log("Too many bookings")
+            }
+        }else{
+            console.log("It is not available")
+        }
+    })
+}
+
+//Print the message
+function saveAppointment(topic, message) {
+    const appointment = new booking(message);
     appointment.save((err) => {
         if (err) return handleError(err);
         // saved!
       });
     console.log("The appointment has been made!")
-=======
-function messageFilter2(topic, message) {
-    if (message.includes("Albin")) {
-        console.log("It is working perfectly")
-        messageFilter3(topic, message)
-    } else {
-        console.log("Doesn't work at all")
-    }
->>>>>>> origin/main
-}
 
-//Print the message
-function messageFilter3(topic, message) {
-    console.log("It is working perfectly")
 }
 
 

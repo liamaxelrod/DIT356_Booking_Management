@@ -38,5 +38,15 @@ function publishDeletedBooking(topic) {
   })
 }
 
+//Post if found bookings
+function publishBookingDate(topic) {
+  const pubMessage = "Booking has succesfully been found";
+  client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
 
-module.exports = {publish_topic, publishDeletedBooking}
+
+module.exports = {publish_topic, publishDeletedBooking, publishBookingDate}
