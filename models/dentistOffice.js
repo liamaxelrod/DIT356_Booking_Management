@@ -109,7 +109,7 @@ var dentistOfficeSchema = new Schema({
     dentistOffices.insertMany(dentists, function(err,r) {
         assert.equal(null, err);
         //assert.equal(4, r.insertedCount);
-        mongoose.connection.close()
+        //mongoose.connection.close()
   })
   }
   
