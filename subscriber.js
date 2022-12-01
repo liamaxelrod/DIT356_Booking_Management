@@ -46,8 +46,8 @@ client.on('message', (topic, payload) => {
     }else if(topic == 'dentistimo/booking/create-booking'){
       pipe1.filterTopic(topic, payload)
     }else if(topic == 'dentistimo/booking/delete-booking'){
-      console.log(message)
-      pipe1.filterTopic(topic, message)
+      console.log(payload)
+      pipe1.filterTopic(topic, payload)
     }else{
       console.log("funkar ej")
     }

@@ -77,7 +77,6 @@ function saveAppointment(topic, message) {
 
 //Delete booking filter
 function deleteFilter(topic, message) {
-    message = JSON.parse(message)
     if (message.issuance != null) {
         async function deleteBooking() {
             try {
