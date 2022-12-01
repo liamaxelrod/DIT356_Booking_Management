@@ -38,10 +38,15 @@ function publishDeletedBooking(topic) {
   })
 }
 
-//Post if found bookings
-function publishBookingDate(topic) {
-  const pubMessage = "Booking has succesfully been found";
-  client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
+//Publish message when a successfull booking has been made
+function publishBookingDate(topic, message) {
+  topic = "dentistimo/booking/succesfull-booking"
+  var pubUserId = message.userid
+  var pubRequestId = message.requestid
+  var pubTime = message.time 
+  var pubMessage = ({"userId": pubUserId, "requestId": pubRequestId, "time": pubTime})
+
+  client.publish(topic, JSON.stringify(pubMessage), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

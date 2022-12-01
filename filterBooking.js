@@ -19,15 +19,16 @@ function filterTopic(topic, message){
 }
 
 
-//Check time & date is available in databse
+//Check date, time and dentist is available in databse
 function availabilityFilter(topic, message){
-        async function checkAvailability(message) {
+        async function checkAvailability(topic, message) {
         try {
             var checkDate = message.date
             var checkTime = message.time
-            //Find booking with date and time as identifier
-            booking.findOne({ date: checkDate, time: checkTime }, function (err, checkDate, checkTime) {
-                if(checkDate == null && checkTime == null){
+            var checkDentist = message.dentistid
+            //Find booking with date, time and dentist as identifier
+            booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist}, function (err, checkDate, checkTime, checkDentist) {
+                if(checkDate == null && checkTime == null && checkDentist == null){
                     filterMakeAppointment(topic, message)
                 }else{
                     console.log("It is not available")
@@ -39,26 +40,21 @@ function availabilityFilter(topic, message){
     if(message.date == "" || null){
         console.log("No date")
     }else{
-        checkAvailability(message);
+        checkAvailability(topic, message);
     }
 }
 
-//To check if it includes something specific  
+//Filter the amount of times the user has booked an appointment. It may not exceed 2 appointments
 function filterMakeAppointment(topic, message){
     var userIdInput = message.userid
     var keyCount = 0
-    console.log("Testing id", userIdInput)
-    console.log("Testing keycount", keyCount)
+    //Looking in the database for the userId, to count how many appointments this user has made
     booking.find({ userid: userIdInput }, function (err, userIdInput) {
         if(userIdInput != null){
             keyCount = Object.keys(userIdInput).length;
-            console.log(keyCount)
             if(keyCount < 2){
-                console.log(keyCount)
-                console.log("Save booking")
                 saveAppointment(topic, message)
             }else{
-                console.log(keyCount)
                 console.log("Too many bookings")
             }
         }else{
@@ -67,15 +63,15 @@ function filterMakeAppointment(topic, message){
     })
 }
 
-//Print the message
+//This function will save the appointment in the database
 function saveAppointment(topic, message) {
     const appointment = new booking(message);
     appointment.save((err) => {
         if (err) return handleError(err);
         // saved!
       });
-    console.log("The appointment has been made!")
-
+    //Publish message
+    publisher.publishBookingDate(topic, message)
 }
 
 
