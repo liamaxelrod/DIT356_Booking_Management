@@ -1,4 +1,4 @@
-module.exports = { filterTopic, deleteFilter }
+module.exports = { filterTopic, deleteFilter,availabilityFilter, filterMakeAppointment, saveAppointment}
 const mongoose = require("mongoose");
 const dentistOffices = require('../booking-management/models/dentistOffice')
 const booking = require('../booking-management/models/booking')
