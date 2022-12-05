@@ -1,0 +1,21 @@
+image: node:latest
+
+stages:          
+  - build
+  - test
+
+build:
+  stage: build
+  tags:
+    - docker
+  script:
+    - npm install
+
+lint-test-job:   # This job also runs in the test stage.
+  tags: 
+    - docker
+  script:
+  - npm install
+  - npm run lint
+  dependencies:
+    - lint-test-job
