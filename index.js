@@ -48,7 +48,7 @@ const db = mongoose.connection
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 // subscriber
-subscriber.subscribe_topic()
+subscriber.subscribeTopic()
 
 // publisher
 // publisher.publish_topic()
