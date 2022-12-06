@@ -1,9 +1,9 @@
 module.exports = { filterTopic }
 // const mongoose = require('mongoose')
 // const dentistOffices = require('../booking-management/models/dentistOffice')
-const Breaks = require('./models/dentistBreaks')
-const Booking = require('../booking-management/models/booking')
-const publisher = require('./publisher')
+const Breaks = require('../models/dentistBreaks')
+const Booking = require('../models/booking')
+const publisher = require('../publisher')
 
 // Send to another filter
 function filterTopic (topic, message) {

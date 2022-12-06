@@ -1,8 +1,8 @@
 module.exports = { filterTopic, deleteFilter }
 // const mongoose = require('mongoose')
 // const dentistOffices = require('../booking-management/models/dentistOffice')
-const Booking = require('../booking-management/models/booking')
-const publisher = require('../booking-management/publisher')
+const Booking = require('../models/booking')
+const publisher = require('../publisher')
 // const { count } = require('../booking-management/models/dentistOffice')
 
 // Send to another filter

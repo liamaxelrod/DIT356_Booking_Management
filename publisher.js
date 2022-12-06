@@ -1,3 +1,4 @@
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika }
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -54,5 +55,3 @@ function publishBookingDate (topic, message) {
 function publishBreakFika (topic, message) {
   console.log('this will publish', message)
 }
-
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika }
