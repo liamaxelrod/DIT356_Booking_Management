@@ -3,6 +3,7 @@ module.exports = { subscribeTopic }
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const pipe1 = require('../booking-management/filterBooking')
+const pipeDentist = require('../booking-management/filterDentist')
 
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -21,7 +22,6 @@ function subscribeTopic () {
   const topic1 = 'dentistimo/booking/create-booking'
   const topic2 = 'dentistimo/booking/delete-booking'
   const topic3 = 'dentistimo/dentist/breaks'
-
 
   client.on('connect', () => {
     console.log('Connected')
@@ -55,7 +55,7 @@ client.on('message', (topic, payload) => {
     pipe1.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist/breaks') {
     console.log(payload)
-    pipe1.filterTopic(topic, payload)
+    pipeDentist.filterTopic(topic, payload)
   } else {
     console.log('funkar ej')
   }

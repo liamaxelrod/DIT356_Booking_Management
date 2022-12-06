@@ -51,4 +51,8 @@ function publishBookingDate (topic, message) {
   })
 }
 
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate }
+function publishBreakFika (topic, message) {
+  console.log('this will publish', message)
+}
+
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika }
