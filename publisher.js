@@ -10,27 +10,25 @@ const client = mqtt.connect(connectUrl, {
   connectTimeout: 4000,
   username: 'group6_dentistimo',
   password: 'dentistimo123!',
-  reconnectPeriod: 1000,
+  reconnectPeriod: 1000
 })
 
 const topic = 'my/test/topic'
 
-function publish_topic(){
-
-    //const topic1 = '/nodejs/albin'
-    client.on('connect', () => {
-      client.publish(topic, 'nodejs mqtt test', { qos: 1, retain: false }, (error) => {
-        if (error) {
-          console.error(error)
-        }
-      })
+function publishTopic () {
+  // const topic1 = '/nodejs/albin'
+  client.on('connect', () => {
+    client.publish(topic, 'nodejs mqtt test', { qos: 1, retain: false }, (error) => {
+      if (error) {
+        console.error(error)
+      }
     })
-
+  })
 }
 
-//Post deleted bookings
-function publishDeletedBooking(topic) {
-  const pubMessage = "Booking has succesfully been removed";
+// Post deleted bookings
+function publishDeletedBooking (topic) {
+  const pubMessage = 'Booking has succesfully been removed'
   client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
@@ -38,13 +36,13 @@ function publishDeletedBooking(topic) {
   })
 }
 
-//Publish message when a successfull booking has been made
-function publishBookingDate(topic, message) {
-  topic = "dentistimo/booking/succesfull-booking"
-  var pubUserId = message.userid
-  var pubRequestId = message.requestid
-  var pubTime = message.time 
-  var pubMessage = ({"userId": pubUserId, "requestId": pubRequestId, "time": pubTime})
+// Publish message when a successfull booking has been made
+function publishBookingDate (topic, message) {
+  topic = 'dentistimo/booking/succesfull-booking'
+  const pubUserId = message.userid
+  const pubRequestId = message.requestid
+  const pubTime = message.time
+  const pubMessage = ({ userId: pubUserId, requestId: pubRequestId, time: pubTime })
 
   client.publish(topic, JSON.stringify(pubMessage), { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -53,5 +51,4 @@ function publishBookingDate(topic, message) {
   })
 }
 
-
-module.exports = {publish_topic, publishDeletedBooking, publishBookingDate}
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate }
