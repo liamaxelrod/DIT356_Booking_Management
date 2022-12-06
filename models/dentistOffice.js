@@ -104,7 +104,7 @@ var dentistOfficeSchema = new Schema({
     ]
   }
   
-  async function addToDentistDb() {
+ dentistOfficeSchema.statics.addToDentistDb = async function() {
    await dentistOffices.deleteMany({})
     dentistOffices.insertMany(dentists, function(err,r) {
         assert.equal(null, err);
@@ -112,10 +112,8 @@ var dentistOfficeSchema = new Schema({
         //mongoose.connection.close()
   })
   }
-  
-
+ 
 var dentistOffices = mongoose.model('dentistOffices', dentistOfficeSchema);
-
-module.exports = {dentistOffices, addToDentistDb}
+module.exports = dentistOffices;
 
 

@@ -22,6 +22,10 @@ function subscribe_topic(){
     const topic1 = 'dentistimo/booking/create-booking'
     const topic2 = 'dentistimo/booking/delete-booking'
     
+
+    //Dentist Office topics:
+    const office_topic = 'dentistimo/dentist-office/fetch-all'
+    
     client.on('connect', () => {
       console.log('Connected')
       client.subscribe([topic], () => {
@@ -36,6 +40,10 @@ function subscribe_topic(){
         console.log(`Subscribe to topic '${topic2}'`)
         console.log(clientId)
       })
+      client.subscribe([office_topic], () => {
+        console.log(`Subscribe to topic '${office_topic}'`)
+        console.log(clientId)
+      })
     })
 }
 
@@ -46,6 +54,9 @@ client.on('message', (topic, payload) => {
     }else if(topic == 'dentistimo/booking/create-booking'){
       pipe1.filterTopic(topic, payload)
     }else if(topic == 'dentistimo/booking/delete-booking'){
+      //console.log(message)
+      pipe1.filterTopic(topic, payload)
+    }else if(topic == 'dentistimo/dentist-office/fetch-all'){
       //console.log(message)
       pipe1.filterTopic(topic, payload)
     }else{

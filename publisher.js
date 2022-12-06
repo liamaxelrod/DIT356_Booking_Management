@@ -2,6 +2,7 @@ const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
+const dentistOffices = require('../booking-management/models/dentistOffice')
 
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
@@ -53,5 +54,15 @@ function publishBookingDate(topic, message) {
   })
 }
 
+//Publish all available dentist offices
+async function publishAllOffices(message) {
+  var dentist_topic = 'dentistimo/dentist-office/get-all'
+  client.publish(dentist_topic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
 
-module.exports = {publish_topic, publishDeletedBooking, publishBookingDate}
+
+module.exports = {publish_topic, publishDeletedBooking, publishBookingDate, publishAllOffices}

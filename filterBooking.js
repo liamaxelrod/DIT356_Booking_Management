@@ -14,6 +14,8 @@ function filterTopic(topic, message) {
         availabilityFilter(topic, message)
     } else if (topic == 'dentistimo/booking/delete-booking') {
         deleteFilter(message)
+    }else if (topic == 'dentistimo/dentist-office/fetch-all') {
+        getOffices(message)
     } else {
         console.log("Unable to read topic")
     }
@@ -105,6 +107,18 @@ async function deleteBooking(message) {
             publisher.publishDeletedBooking(deletedBookingTopic)
         } else {
             console.log('Could not find booking')
+        }
+    } catch (e) {
+        console.log(e.message)
+    }
+}
+
+async function getOffices(message) {
+    try {
+        if(message.message == "get_all_offices"){
+          const filter = {};
+          const all_offices = await dentistOffices.find(filter);
+          publisher.publishAllOffices(all_offices)
         }
     } catch (e) {
         console.log(e.message)
