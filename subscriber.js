@@ -20,6 +20,8 @@ function subscribeTopic () {
   const topic = 'my/test/topic'
   const topic1 = 'dentistimo/booking/create-booking'
   const topic2 = 'dentistimo/booking/delete-booking'
+  const topic3 = 'dentistimo/dentist/breaks'
+
 
   client.on('connect', () => {
     console.log('Connected')
@@ -35,6 +37,10 @@ function subscribeTopic () {
       console.log(`Subscribe to topic '${topic2}'`)
       console.log(clientId)
     })
+    client.subscribe([topic3], () => {
+      console.log(`Subscribe to topic '${topic3}'`)
+      console.log(clientId)
+    })
   })
 }
 
@@ -45,6 +51,9 @@ client.on('message', (topic, payload) => {
   } else if (topic === 'dentistimo/booking/create-booking') {
     pipe1.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/delete-booking') {
+    console.log(payload)
+    pipe1.filterTopic(topic, payload)
+  } else if (topic === 'dentistimo/dentist/breaks') {
     console.log(payload)
     pipe1.filterTopic(topic, payload)
   } else {

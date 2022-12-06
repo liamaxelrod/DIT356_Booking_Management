@@ -50,16 +50,6 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 // subscriber
 subscriber.subscribeTopic()
 
-// publisher
-// publisher.publish_topic()
-
-// const new_office = new dentistOffices({ id: 2 });
-// // Save the new model instance, passing a callback
-// new_office.save((err) => {
-//     if (err) return handleError(err);
-//     // saved!
-//   });
-
 // Handle errors
 client.on('error', function (error) {
   console.log('Error occurred: ' + error)
