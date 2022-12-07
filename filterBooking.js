@@ -1,9 +1,7 @@
 module.exports = { filterTopic, deleteFilter, availabilityFilter, filterMakeAppointment, saveAppointment }
-// const mongoose = require('mongoose')
-const dentistOffices = require('../booking-management/models/dentistOffice')
+const Office = require('../booking-management/models/dentistOffice')
 const Booking = require('../booking-management/models/booking')
 const publisher = require('../booking-management/publisher')
-// const { count } = require('../booking-management/models/dentistOffice')
 const assert = require('assert')
 
 // Send to another filter
@@ -14,7 +12,9 @@ function filterTopic (topic, message) {
   } else if (topic === 'dentistimo/booking/delete-booking') {
     deleteFilter(message)
   } else if (topic === 'dentistimo/dentist-office/fetch-all') {
-    getOffices(message)
+    OfficeFilter(message)
+  } else if (topic === 'dentistimo/dentist-office/fetch-one') {
+    OfficeFilter(message)
   } else {
     console.log('Unable to read topic')
   }
@@ -109,12 +109,32 @@ async function deleteBooking (message) {
   }
 }
 
-async function getOffices (message) {
+function OfficeFilter (message) {
+  if (message.message === 'get_all_offices') {
+    getOffices()
+  } else if (message.id != null) {
+    getOneOffice(message)
+  }
+}
+
+async function getOffices () {
   try {
-    if (message.message === 'get_all_offices') {
-      const filter = {}
-      const allOffices = await dentistOffices.find(filter)
-      publisher.publishAllOffices(allOffices)
+    const filter = {}
+    const allOffices = await Office.find(filter)
+    publisher.publishAllOffices(allOffices)
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+async function getOneOffice (message) {
+  try {
+    // Find office with id as identifier
+    const findOffice = await Office.findOne({ id: message.id })
+    if (findOffice != null) {
+      publisher.publishOneOffice(findOffice)
+    } else {
+      console.log('Could not find the dentist office')
     }
   } catch (e) {
     console.log(e.message)

@@ -53,7 +53,7 @@ function publishBookingDate (topic, message) {
 }
 
 // Publish all available dentist offices
-async function publishAllOffices (message) {
+function publishAllOffices (message) {
   const dentistTopic = 'dentistimo/dentist-office/get-all'
   client.publish(dentistTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -62,4 +62,13 @@ async function publishAllOffices (message) {
   })
 }
 
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishAllOffices }
+function publishOneOffice (message) {
+  const foundOfficeTopic = 'dentistimo/dentist-office/one-office'
+  client.publish(foundOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishAllOffices, publishOneOffice }
