@@ -12,8 +12,8 @@ const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: 'group6_dentistimo',
-  password: 'dentistimo123!',
+  username: process.env.USERNAME,
+  password: process.env.MQTT_PASSWORD,
   reconnectPeriod: 1000
 })
 function subscribeTopic () {

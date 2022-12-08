@@ -1,5 +1,5 @@
+require('dotenv').config()
 const mqtt = require('mqtt')
-
 const subscriber = require('../booking-management/subscriber')
 // const publisher = require('../booking-management/publisher')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
@@ -13,16 +13,15 @@ const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: 'group6_dentistimo',
-  password: 'dentistimo123!',
+  username: process.env.USERNAME,
+  password: process.env.MQTT_PASSWORD,
   reconnectPeriod: 1000
 })
 
 // Set up default mongoose connection
 
 // Remote
-// var mongoURI = process.env.MONGODB_URI ;
-
+// const mongoURI = process.env.MONGODB_URI
 // local
 const mongoURI = 'mongodb://localhost:27017/Dentistimo'
 
