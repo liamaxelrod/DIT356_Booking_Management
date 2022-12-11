@@ -2,7 +2,6 @@ module.exports = { filterTopic, deleteFilter, availabilityFilter, filterMakeAppo
 const Office = require('../booking-management/models/dentistOffice')
 const Booking = require('../booking-management/models/booking')
 const publisher = require('../booking-management/publisher')
-const assert = require('assert')
 
 // Send to another filter
 function filterTopic (topic, message) {
@@ -68,18 +67,10 @@ function filterMakeAppointment (topic, message) {
 // This function will save the appointment in the database
 function saveAppointment (topic, message) {
   const appointment = new Booking(message)
-  appointment.save(
-    // if (err) return handleError(err);
-    // // saved!
-  ).then(() => {
-    // console.log(!appointment.isNew)
-    const result = assert(!appointment.isNew)
-    return result
+  appointment.save((_err) => {
+    // saved!
   })
-    .catch(() => {
-      console.log('error')
-    })
-    // Publish message
+  // Publish message
   publisher.publishBookingDate(topic, message)
 }
 
@@ -117,6 +108,7 @@ function OfficeFilter (message) {
   }
 }
 
+// Function for getting all offices
 async function getOffices () {
   try {
     const filter = {}
@@ -127,6 +119,7 @@ async function getOffices () {
   }
 }
 
+// Function for getting one office
 async function getOneOffice (message) {
   try {
     // Find office with id as identifier

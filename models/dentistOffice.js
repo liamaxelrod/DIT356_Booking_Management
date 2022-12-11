@@ -22,8 +22,6 @@ const dentistOfficeSchema = new Schema({
   }
 })
 
-// eslint-disable-next-line no-lone-blocks
-
 const dentists = [
   {
     id: 1,
@@ -107,8 +105,6 @@ dentistOfficeSchema.statics.addToDentistDb = async function () {
   await dentistOffices.deleteMany({})
   dentistOffices.insertMany(dentists, function (err, r) {
     assert.equal(null, err)
-    // assert.equal(4, r.insertedCount);
-    // mongoose.connection.close()
   })
 }
 
