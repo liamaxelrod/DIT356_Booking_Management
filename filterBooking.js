@@ -127,7 +127,7 @@ async function getOneOffice (message) {
     if (findOffice != null) {
       publisher.publishOneOffice(findOffice)
     } else {
-      console.log('Could not find the dentist office')
+      publisher.publishOneOffice('Could not find the dentist office')
     }
   } catch (e) {
     console.log(e.message)
