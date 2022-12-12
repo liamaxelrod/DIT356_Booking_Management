@@ -49,6 +49,7 @@ client.on('message', (topic, payload) => {
   if (topic === 'my/test/topic') {
     console.log(payload)
   } else if (topic === 'dentistimo/booking/create-booking') {
+    console.log(JSON.stringify(payload))
     pipe1.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/delete-booking') {
     console.log(payload)

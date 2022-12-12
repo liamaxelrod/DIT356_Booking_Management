@@ -39,13 +39,18 @@ function publishDeletedBooking (topic) {
 
 // Publish message when a successfull booking has been made
 function publishBookingDate (topic, message) {
-  topic = 'dentistimo/booking/succesfull-booking'
-  const pubUserId = message.userid
-  const pubRequestId = message.requestid
-  const pubTime = message.time
-  const pubMessage = ({ userId: pubUserId, requestId: pubRequestId, time: pubTime })
-
-  client.publish(topic, JSON.stringify(pubMessage), { qos: 1, retain: false }, (error) => {
+  topic = 'dentistimo/booking/succesful-booking'
+  let pubMessage
+  if (message !== null) {
+    const pubUserId = message.userid
+    const pubRequestId = message.requestid
+    const pubDate = message.date
+    const pubTime = message.time
+    pubMessage = ({ userId: pubUserId, requestId: pubRequestId, date: pubDate, time: pubTime })
+  } else {
+    pubMessage = 'Booking unavailable'
+  }
+  client.publish(topic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }
@@ -53,5 +58,11 @@ function publishBookingDate (topic, message) {
 }
 
 function publishBreakFika (topic, message) {
+  const pubMessage = ({ dentistid: message.dentistid, breakType: message.breakType, date: message.date, time: message.time })
+  client.publish(topic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
   console.log('this will publish', message)
 }

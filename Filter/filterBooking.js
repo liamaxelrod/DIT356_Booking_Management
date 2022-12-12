@@ -30,6 +30,8 @@ function availabilityFilter (topic, message) {
           filterMakeAppointment(topic, message)
         } else {
           console.log('It is not available')
+          message = null
+          publisher.publishBookingDate(topic, message)
         }
       })
     } catch (e) {
