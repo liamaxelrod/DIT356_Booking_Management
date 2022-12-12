@@ -1,9 +1,7 @@
-module.exports = { filterTopic, deleteFilter }
-// const mongoose = require('mongoose')
-// const dentistOffices = require('../booking-management/models/dentistOffice')
+module.exports = { filterTopic, deleteFilter, availabilityFilter, filterMakeAppointment, saveAppointment }
+const Office = require('../booking-management/models/dentistOffice')
 const Booking = require('../booking-management/models/booking')
 const publisher = require('../booking-management/publisher')
-// const { count } = require('../booking-management/models/dentistOffice')
 
 // Send to another filter
 function filterTopic (topic, message) {
@@ -11,7 +9,11 @@ function filterTopic (topic, message) {
   if (topic === 'dentistimo/booking/create-booking') {
     availabilityFilter(topic, message)
   } else if (topic === 'dentistimo/booking/delete-booking') {
-    deleteFilter(topic, message)
+    deleteFilter(message)
+  } else if (topic === 'dentistimo/dentist-office/fetch-all') {
+    OfficeFilter(message)
+  } else if (topic === 'dentistimo/dentist-office/fetch-one') {
+    OfficeFilter(message)
   } else {
     console.log('Unable to read topic')
   }
@@ -25,7 +27,7 @@ function availabilityFilter (topic, message) {
       const checkTime = message.time
       const checkDentist = message.dentistid
       // Find booking with date, time and dentist as identifier
-      Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist }, function (checkDate, checkTime, checkDentist) {
+      Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist }, function (_err, checkDate, checkTime, checkDentist) {
         if (checkDate == null && checkTime == null && checkDentist == null) {
           filterMakeAppointment(topic, message)
         } else {
@@ -66,7 +68,6 @@ function filterMakeAppointment (topic, message) {
 function saveAppointment (topic, message) {
   const appointment = new Booking(message)
   appointment.save((_err) => {
-
     // saved!
   })
   // Publish message
@@ -74,19 +75,61 @@ function saveAppointment (topic, message) {
 }
 
 // Delete booking filter
-function deleteFilter (topic, message) {
+function deleteFilter (message) {
+  console.log(message.issuance)
   if (message.issuance != null) {
-    async function deleteBooking () {
-      try {
-        console.log(message.issuance)
-        // Delete booking with issuance as identifier
-        await Booking.deleteOne({ issuance: message.issuance })
-        const deletedBookingTopic = 'dentistimo/booking/deleted-booking'
-        publisher.publishDeletedBooking(deletedBookingTopic)
-      } catch (e) {
-        console.log(e.message)
-      }
+    deleteBooking(message)
+  } else {
+    console.log('Message does not include issuance')
+  }
+}
+
+async function deleteBooking (message) {
+  try {
+    // Delete booking with issuance as identifier
+    const findBooking = await Booking.findOne({ issuance: message.issuance })
+    if (findBooking != null) {
+      await Booking.deleteOne({ issuance: message.issuance })
+      const deletedBookingTopic = 'dentistimo/booking/deleted-booking'
+      publisher.publishDeletedBooking(deletedBookingTopic)
+    } else {
+      console.log('Could not find booking')
     }
-    deleteBooking()
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+function OfficeFilter (message) {
+  if (message.message === 'get_all_offices') {
+    getOffices()
+  } else if (message.id != null) {
+    getOneOffice(message)
+  }
+}
+
+// Function for getting all offices
+async function getOffices () {
+  try {
+    const filter = {}
+    const allOffices = await Office.find(filter)
+    publisher.publishAllOffices(allOffices)
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+// Function for getting one office
+async function getOneOffice (message) {
+  try {
+    // Find office with id as identifier
+    const findOffice = await Office.findOne({ id: message.id })
+    if (findOffice != null) {
+      publisher.publishOneOffice(findOffice)
+    } else {
+      publisher.publishOneOffice('Could not find the dentist office')
+    }
+  } catch (e) {
+    console.log(e.message)
   }
 }
