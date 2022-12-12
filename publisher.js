@@ -64,5 +64,4 @@ function publishBreakFika (topic, message) {
       console.error(error)
     }
   })
-  console.log('this will publish', message)
 }

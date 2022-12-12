@@ -44,11 +44,24 @@ function checkAvailabilityFilter (topic, message) {
 
 // This function will save the appointment in the database
 function saveBreak (topic, message) {
-  const breakFika = new Breaks(message)
-  breakFika.save((_err) => {
+  if (message.breakType === 'break') {
+    console.log('Break')
+    const breakFika = new Breaks(message)
+    breakFika.save((_err) => {
+      // saved!
+    })
+    topic = 'dentistimo/dentist/break-booked'
+  } else if (message.breakType === 'lunch') {
+    console.log('lunch')
+    const breakFika = new Breaks(message)
+    breakFika.save((_err) => {
+      // saved!
+    })
+    topic = 'dentistimo/dentist/lunch-booked'
+  } else {
+    console.log('Does not work, throw error')
+  }
 
-    // saved!
-  })
   // Publish message
   publisher.publishBreakFika(topic, message)
 }
