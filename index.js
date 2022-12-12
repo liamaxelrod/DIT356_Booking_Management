@@ -1,21 +1,18 @@
+require('dotenv').config()
 const mqtt = require('mqtt')
-
 const subscriber = require('../booking-management/subscriber')
-// const publisher = require('../booking-management/publisher')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const mongoose = require('mongoose')
-// const dentistOffices = require('../booking-management/models/dentistOffice')
-// const booking = require('../booking-management/models/booking')
-
+const dentistOffices = require('../booking-management/models/dentistOffice')
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: 'group6_dentistimo',
-  password: 'dentistimo123!',
+  username: process.env.USERNAME,
+  password: process.env.MQTT_PASSWORD,
   reconnectPeriod: 1000
 })
 
@@ -24,8 +21,7 @@ const client = mqtt.connect(connectUrl, {
 // Remote
 const mongoURI = 'mongodb+srv://group6_dentistimo:dentistimo123!@dentistimo.1rd4hln.mongodb.net/test'
 
-// local
-// const mongoURI = 'mongodb://localhost:27017/Dentistimo'
+// const mongoURI = process.env.MONGODB_URI
 
 // Connect to MongoDB
 mongoose.connect(
@@ -49,6 +45,9 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 // subscriber
 subscriber.subscribeTopic()
+
+// Add dentist office registry
+dentistOffices.addToDentistDb()
 
 // Handle errors
 client.on('error', function (error) {

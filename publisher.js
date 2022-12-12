@@ -3,14 +3,15 @@ const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
+// const dentistOffices = require('../booking-management/models/dentistOffice')
 
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: 'group6_dentistimo',
-  password: 'dentistimo123!',
+  username: process.env.USERNAME,
+  password: process.env.MQTT_PASSWORD,
   reconnectPeriod: 1000
 })
 
@@ -66,3 +67,23 @@ function publishBreakFika (topic, message) {
     }
   })
 }
+// Publish all available dentist offices
+function publishAllOffices (message) {
+  const dentistTopic = 'dentistimo/dentist-office/get-all'
+  client.publish(dentistTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+function publishOneOffice (message) {
+  const foundOfficeTopic = 'dentistimo/dentist-office/one-office'
+  client.publish(foundOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishAllOffices, publishOneOffice }

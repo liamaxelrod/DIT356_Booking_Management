@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha './test/*.js'",
     "lint": "eslint . --ext .js --ext .jsx --ext .ts --ext .tsx --ext .gql --ext .graphql"
   },
   "repository": {
@@ -16,15 +16,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "mongoose": "^6.7.3",
     "mqtt": "^4.3.7",
     "nodemon": "^2.0.20"
   },
   "devDependencies": {
-    "eslint": "^8.29.0",
+    "@types/chai": "^4.3.4",
+    "chai": "^4.3.7",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.6.0",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.1.0",
+    "sinon": "^15.0.0"
   }
 }
