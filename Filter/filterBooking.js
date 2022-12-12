@@ -2,7 +2,7 @@
 const Booking = require('../models/booking')
 const publisher = require('../publisher')
 module.exports = { filterTopic, deleteFilter, availabilityFilter, filterMakeAppointment, saveAppointment }
-const Office = require('../booking-management/models/dentistOffice')
+const Office = require('../models/dentistOffice')
 
 // Send to another filter
 function filterTopic (topic, message) {
