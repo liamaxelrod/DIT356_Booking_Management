@@ -2,7 +2,7 @@ module.exports = { subscribeTopic }
 
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
-const pipe1 = require('./Filter/filterBooking')
+const pipeBooking = require('./Filter/filterBooking')
 const pipeDentist = require('../booking-management/Filter/filterDentist')
 
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
@@ -44,20 +44,18 @@ function subscribeTopic () {
   })
 }
 
+// Filtering the different topics
 client.on('message', (topic, payload) => {
-  // console.log('Received Message:', topic, payload.toString())
   if (topic === 'my/test/topic') {
     console.log(payload)
   } else if (topic === 'dentistimo/booking/create-booking') {
     console.log(JSON.stringify(payload))
-    pipe1.filterTopic(topic, payload)
+    pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/delete-booking') {
-    console.log(payload)
-    pipe1.filterTopic(topic, payload)
+    pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist/breaks') {
-    console.log(payload)
     pipeDentist.filterTopic(topic, payload)
   } else {
-    console.log('funkar ej')
+    console.log('Not a correct topic')
   }
 })

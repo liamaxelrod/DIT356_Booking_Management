@@ -43,17 +43,15 @@ function checkAvailabilityFilter (topic, message) {
   }
 }
 
-// This function will save the break in the database depending on the breakType
+// This function will save the break in the database depending on the breakType, 'break' || 'lunch'
 function saveBreak (topic, message) {
   if (message.breakType === 'break') {
-    console.log('Break')
     const breakFika = new Breaks(message)
     breakFika.save((_err) => {
       // saved!
     })
     topic = 'dentistimo/dentist/break-booked'
   } else if (message.breakType === 'lunch') {
-    console.log('lunch')
     const breakFika = new Breaks(message)
     breakFika.save((_err) => {
       // saved!
