@@ -50,17 +50,14 @@ function saveBreak (topic, message) {
     breakFika.save((_err) => {
       // saved!
     })
-    topic = 'dentistimo/dentist/break-booked'
   } else if (message.breakType === 'lunch') {
     const breakFika = new Breaks(message)
     breakFika.save((_err) => {
       // saved!
     })
-    topic = 'dentistimo/dentist/lunch-booked'
   } else {
     console.log('Does not work, throw error')
   }
-
   // Publish message
   publisher.publishBreakFika(topic, message)
 }

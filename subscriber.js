@@ -2,7 +2,7 @@ module.exports = { subscribeTopic }
 
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
-const pipeBooking = require('./Filter/filterBooking')
+const pipeBooking = require('../booking-management/Filter/filterBooking')
 const pipeDentist = require('../booking-management/Filter/filterDentist')
 
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
@@ -13,8 +13,8 @@ const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: process.env.USERNAME,
-  password: process.env.MQTT_PASSWORD,
+  username: 'group6_dentistimo',
+  password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
 function subscribeTopic () {
@@ -67,13 +67,12 @@ client.on('message', (topic, payload) => {
   } else if (topic === 'dentistimo/dentist/breaks') {
     pipeDentist.filterTopic(topic, payload)
     // console.log(message)
-    pipeDentist.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist-office/fetch-all') {
     // console.log(message)
-    pipeDentist.filterTopic(topic, payload)
+    pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
     // console.log(message)
-    pipeDentist.filterTopic(topic, payload)
+    pipeBooking.filterTopic(topic, payload)
   } else {
     console.log('Not a correct topic')
   }

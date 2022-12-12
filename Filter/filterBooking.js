@@ -16,7 +16,7 @@ function filterTopic (topic, message) {
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
     OfficeFilter(message)
   } else {
-    console.log('Unable to read topic')
+    console.log('Unable to read topic 1')
   }
 }
 
