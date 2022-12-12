@@ -57,6 +57,7 @@ function publishBookingDate (topic, message) {
   })
 }
 
+// This method will publish breaks to the frontend and topic will differ depending on break or lunch in the 'breakType' attribute
 function publishBreakFika (topic, message) {
   const pubMessage = ({ dentistid: message.dentistid, breakType: message.breakType, date: message.date, time: message.time })
   client.publish(topic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {

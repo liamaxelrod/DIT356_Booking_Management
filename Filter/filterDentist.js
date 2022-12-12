@@ -17,6 +17,7 @@ function filterTopic (topic, message) {
   }
 }
 
+// This filter will check the availability, similarly to the booking appointment
 function checkAvailabilityFilter (topic, message) {
   async function checkAvailability (topic, message) {
     try {
@@ -42,7 +43,7 @@ function checkAvailabilityFilter (topic, message) {
   }
 }
 
-// This function will save the appointment in the database
+// This function will save the break in the database depending on the breakType
 function saveBreak (topic, message) {
   if (message.breakType === 'break') {
     console.log('Break')
