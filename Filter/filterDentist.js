@@ -12,6 +12,10 @@ function filterTopic (topic, message) {
     checkAvailabilityFilter(topic, message)
   } else if (topic === 'dentistimo/booking/lunch') {
     console.log(message)
+  } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments') {
+    getAppointmentsDentist(message)
+  } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments-day') {
+    getAppointmentsDentistDay(message)
   } else {
     console.log('Unable to read topic')
   }
@@ -60,4 +64,24 @@ function saveBreak (topic, message) {
   }
   // Publish message
   publisher.publishBreakFika(topic, message)
+}
+
+// Get all appointments for a dentist using dentisid
+async function getAppointmentsDentist (message) {
+  if (message.dentistid != null) {
+    const res = await Booking.find({ dentistid: message.dentistid })
+    publisher.publishAllDentistAppointments(res)
+  } else {
+    console.log('Could not find any appointments')
+  }
+}
+
+// Get all appointments for a dentist a certain day
+async function getAppointmentsDentistDay (message) {
+  if (message.dentistid != null && message.date != null) {
+    const res = await Booking.find({ dentistid: message.dentistid, date: message.date })
+    publisher.publishAllDentistAppointments(res)
+  } else {
+    console.log('Could not find any appointments that day')
+  }
 }
