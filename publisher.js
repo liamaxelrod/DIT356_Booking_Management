@@ -1,3 +1,4 @@
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice }
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -9,8 +10,8 @@ const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: process.env.USERNAME,
-  password: process.env.MQTT_PASSWORD,
+  username: 'group6_dentistimo',
+  password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
 
@@ -39,19 +40,40 @@ function publishDeletedBooking (topic) {
 
 // Publish message when a successfull booking has been made
 function publishBookingDate (topic, message) {
-  topic = 'dentistimo/booking/succesfull-booking'
-  const pubUserId = message.userid
-  const pubRequestId = message.requestid
-  const pubTime = message.time
-  const pubMessage = ({ userId: pubUserId, requestId: pubRequestId, time: pubTime })
-
-  client.publish(topic, JSON.stringify(pubMessage), { qos: 1, retain: false }, (error) => {
+  topic = 'dentistimo/booking/succesful-booking'
+  let pubMessage
+  if (message !== null) {
+    const pubUserId = message.userid
+    const pubRequestId = message.requestid
+    const pubDate = message.date
+    const pubTime = message.time
+    pubMessage = ({ userId: pubUserId, requestId: pubRequestId, date: pubDate, time: pubTime })
+  } else {
+    pubMessage = 'Booking unavailable'
+  }
+  client.publish(topic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }
   })
 }
 
+// This method will publish breaks to the frontend and topic will differ depending on break or lunch in the 'breakType' attribute
+function publishBreakFika (topic, message) {
+  let breakTopic = ''
+  if (message.breakType === 'break') {
+    breakTopic = 'dentistimo/dentist/break-booked'
+  } else if (message.breakType === 'lunch') {
+    breakTopic = 'dentistimo/dentist/lunch-booked'
+  }
+  const pubMessage = ({ dentistid: message.dentistid, breakType: message.breakType, date: message.date, time: message.time })
+  console.log(breakTopic)
+  client.publish(breakTopic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
 // Publish all available dentist offices
 function publishAllOffices (message) {
   const dentistTopic = 'dentistimo/dentist-office/get-all'
@@ -70,5 +92,3 @@ function publishOneOffice (message) {
     }
   })
 }
-
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishAllOffices, publishOneOffice }

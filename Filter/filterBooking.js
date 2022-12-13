@@ -1,7 +1,8 @@
+
+const Booking = require('../models/booking')
+const publisher = require('../publisher')
 module.exports = { filterTopic, deleteFilter, availabilityFilter, filterMakeAppointment, saveAppointment }
-const Office = require('../booking-management/models/dentistOffice')
-const Booking = require('../booking-management/models/booking')
-const publisher = require('../booking-management/publisher')
+const Office = require('../models/dentistOffice')
 
 // Send to another filter
 function filterTopic (topic, message) {
@@ -15,7 +16,7 @@ function filterTopic (topic, message) {
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
     OfficeFilter(message)
   } else {
-    console.log('Unable to read topic')
+    console.log('Unable to read topic 1')
   }
 }
 
@@ -32,6 +33,8 @@ function availabilityFilter (topic, message) {
           filterMakeAppointment(topic, message)
         } else {
           console.log('It is not available')
+          message = null
+          publisher.publishBookingDate(topic, message)
         }
       })
     } catch (e) {

@@ -11,17 +11,17 @@ const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: process.env.USERNAME,
-  password: process.env.MQTT_PASSWORD,
+  username: 'group6_dentistimo',
+  password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
 
 // Set up default mongoose connection
 
 // Remote
+const mongoURI = 'mongodb+srv://group6_dentistimo:dentistimo123!@dentistimo.1rd4hln.mongodb.net/test'
+
 // const mongoURI = process.env.MONGODB_URI
-// local
-const mongoURI = 'mongodb://localhost:27017/Dentistimo'
 
 // Connect to MongoDB
 mongoose.connect(
