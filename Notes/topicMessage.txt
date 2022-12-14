@@ -1,4 +1,4 @@
-dentistimo/dentist-office/fetch-availability
+topic: dentistimo/dentist-office/fetch-availability
 Example: 
 {
   "date": "December 12, 2022",
