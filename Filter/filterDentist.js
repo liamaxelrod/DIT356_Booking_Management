@@ -66,22 +66,31 @@ function saveBreak (topic, message) {
   publisher.publishBreakFika(topic, message)
 }
 
-// Get all appointments for a dentist using dentisid
 async function getAppointmentsDentist (message) {
-  if (message.dentistid != null) {
-    const res = await Booking.find({ dentistid: message.dentistid })
-    publisher.publishAllDentistAppointments(res)
-  } else {
-    console.log('Could not find any appointments')
+  try {
+    // Find bookings with dentisid as identifier
+    const filter = { dentistid: message.dentistid }
+    const getAppointments = await Booking.find(filter)
+    if (getAppointments.length) {
+      publisher.publishAllDentistAppointments(getAppointments)
+    } else {
+      console.log('Could not find any appointments')
+    }
+  } catch (e) {
+    console.log(e.message)
   }
 }
 
 // Get all appointments for a dentist a certain day
 async function getAppointmentsDentistDay (message) {
-  if (message.dentistid != null && message.date != null) {
-    const res = await Booking.find({ dentistid: message.dentistid, date: message.date })
-    publisher.publishAllDentistAppointments(res)
-  } else {
-    console.log('Could not find any appointments that day')
+  try {
+    const AppointmentsDay = await Booking.find({ dentistid: message.dentistid, date: message.date })
+    if (AppointmentsDay.length) {
+      publisher.publishAllDentistAppointments(AppointmentsDay)
+    } else {
+      console.log('Could not find any appointments that day')
+    }
+  } catch (e) {
+    console.log(e.message)
   }
 }
