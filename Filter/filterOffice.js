@@ -22,43 +22,85 @@ function checkAvailabilityFilter (topic, message) {
   // If weekday: continue. If weekend: Terminate
   if (day > 0 && day < 6) {
     console.log('Weekday')
-    dayIdentifyer(topic, message)
+    const dayMap = new Map()
+    dayMap.set(1, 'monday')
+    dayMap.set(2, 'tuesday')
+    dayMap.set(3, 'wednesday')
+    dayMap.set(4, 'thursday')
+    dayMap.set(5, 'friday')
+    const weekday = dayMap.get(day)
+    console.log(weekday)
+    dayIdentifyer(topic, message, weekday)
   } else {
     console.log('Weekend')
   }
   // dayIdentifyer(topic, message)
 }
 
-function dayIdentifyer (topic, message) {
+function dayIdentifyer (topic, message, weekday) {
+  // Cleaning up the input
   let payloadFrom = JSON.stringify(message.from)
   payloadFrom = payloadFrom.replace('"', '')
   payloadFrom = payloadFrom.replace('"', '')
+  console.log(payloadFrom)
 
   let payloadTo = JSON.stringify(message.to)
   payloadTo = payloadTo.replace('"', '')
   payloadTo = payloadTo.replace('"', '')
-  checkHours(payloadFrom, payloadTo, topic, message)
+  checkHours(payloadFrom, payloadTo, topic, message, weekday)
 }
 
 // Function for getting all offices
-function checkHours (fromInput, toInput, topic, payload) {
+function checkHours (fromInput, toInput, topic, payload, weekday) {
   // Find, at the moment, one office with matching opening hours on mondays
+  const filteredArray = dentists.filter(function (obj) {
+    let checkFrom
+    if (weekday === 'monday') {
+      checkFrom = obj.openinghours.monday.split('-')
+    } else if (weekday === 'tuesday') {
+      checkFrom = obj.openinghours.tuesday.split('-')
+    } else if (weekday === 'wednesday') {
+      checkFrom = obj.openinghours.wednesday.split('-')
+    } else if (weekday === 'thursday') {
+      checkFrom = obj.openinghours.thursday.split('-')
+    } else if (weekday === 'friday') {
+      checkFrom = obj.openinghours.friday.split('-')
+    } else {
+      console.log('Does not work')
+    }
+    checkFrom = checkFrom[0]
+    checkFrom = parseInt(checkFrom)
+    fromInput = parseInt(fromInput)
+    let checkTo = obj.openinghours.monday.split('-')
+    checkTo = checkTo[1]
+    checkTo = parseInt(checkTo)
+    fromInput = parseInt(fromInput)
+    toInput = parseInt(toInput)
+    return (checkFrom <= fromInput && checkTo >= fromInput) || (checkFrom <= toInput && checkTo >= toInput)
+  }).map(function (obj) {
+    return obj.id
+  })
+
+  console.log(filteredArray)
+
   let dent = dentists.find(dent => dent.openinghours.monday === '7:00-19:00')
+
+  console.log(dentists.length)
   dent = dent.openinghours.monday
   const myArray = dent.split('-')
 
   // Identifying when that office opens and close
-  let OfficeHourFrom = myArray[0]
-  let OfficeHourTo = myArray[1]
+  let officeHourFrom = myArray[0]
+  let officeHourTo = myArray[1]
 
   // Converting those hours into comparable variables, including the user inputs
-  OfficeHourFrom = parseInt(OfficeHourFrom)
-  OfficeHourTo = parseInt(OfficeHourTo)
+  officeHourFrom = parseInt(officeHourFrom)
+  officeHourTo = parseInt(officeHourTo)
   fromInput = parseInt(fromInput)
   toInput = parseInt(toInput)
 
   // Checking if those hours are within that gap
-  if (OfficeHourFrom <= fromInput && toInput <= OfficeHourTo) {
+  if (officeHourFrom <= fromInput && toInput <= officeHourTo) {
     console.log('Step 2 works')
   } else {
     console.log('It does not work')
