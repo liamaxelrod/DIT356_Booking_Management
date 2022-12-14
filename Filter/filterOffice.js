@@ -16,6 +16,20 @@ function filterTopic (topic, message) {
 // This filter will check the availability, similarly to the booking appointment
 function checkAvailabilityFilter (topic, message) {
   message = JSON.parse(message)
+  const d = new Date(message.date)
+  const day = d.getDay()
+
+  // If weekday: continue. If weekend: Terminate
+  if (day > 0 && day < 6) {
+    console.log('Weekday')
+    dayIdentifyer(topic, message)
+  } else {
+    console.log('Weekend')
+  }
+  // dayIdentifyer(topic, message)
+}
+
+function dayIdentifyer (topic, message) {
   let payloadFrom = JSON.stringify(message.from)
   payloadFrom = payloadFrom.replace('"', '')
   payloadFrom = payloadFrom.replace('"', '')
@@ -23,23 +37,11 @@ function checkAvailabilityFilter (topic, message) {
   let payloadTo = JSON.stringify(message.to)
   payloadTo = payloadTo.replace('"', '')
   payloadTo = payloadTo.replace('"', '')
-
-  // const d = '12:00:00'
-
-  // getOffices()
-  getOffices(payloadFrom, payloadTo)
-
-  // if (d >= payloadFrom.valueOf() && d <= payloadTo.valueOf()) {
-  //   console.log('Works')
-  // } else if (d <= payloadFrom.valueOf() || d >= payloadTo.valueOf()) {
-  //   console.log('Incorrect values')
-  // } else {d
-  //   console.log('Wrong')
-  // }
+  checkHours(payloadFrom, payloadTo, topic, message)
 }
 
 // Function for getting all offices
-async function getOffices (fromInput, toInput) {
+function checkHours (fromInput, toInput, topic, payload) {
   // Find, at the moment, one office with matching opening hours on mondays
   let dent = dentists.find(dent => dent.openinghours.monday === '7:00-19:00')
   dent = dent.openinghours.monday
@@ -61,11 +63,6 @@ async function getOffices (fromInput, toInput) {
   } else {
     console.log('It does not work')
   }
-  // if (dentists.find(dent => dent.openinghours.monday === '7:00-19:00')) {
-  //   console.log('It works')
-  // } else {
-  //   console.log('does not work')
-  // }
 }
 
 const dentists = [
