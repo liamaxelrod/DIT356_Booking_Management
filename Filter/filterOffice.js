@@ -1,11 +1,6 @@
 const dentistOffices = require('../models/dentistOffice')
 const publisher = require('../publisher')
-
 module.exports = { filterTopic }
-
-// const mongoose = require('mongoose')
-// const dentistOffices = require('../booking-management/models/dentistOffice')
-// const Office = require('../models/dentistOffice')
 
 // Send to another filter
 function filterTopic (topic, message) {
@@ -22,7 +17,7 @@ function checkAvailabilityFilter (topic, message) {
   const d = new Date(message.date)
   const day = d.getDay()
 
-  // If weekday: continue. If weekend: Terminate
+  // If weekday: continue. If weekend: Terminate, hashmap the days into matching day
   if (day > 0 && day < 6) {
     const dayMap = new Map()
     dayMap.set(1, 'monday')
@@ -37,8 +32,8 @@ function checkAvailabilityFilter (topic, message) {
   }
 }
 
+// Cleaning up the input from user
 function timeCleaner (topic, message, weekday) {
-  // Cleaning up the input
   let payloadFrom = JSON.stringify(message.from)
   payloadFrom = payloadFrom.replace('"', '')
   payloadFrom = payloadFrom.replace('"', '')
@@ -49,9 +44,8 @@ function timeCleaner (topic, message, weekday) {
   checkHours(payloadFrom, payloadTo, topic, message, weekday)
 }
 
-// Function for getting all offices
+// Find offices with matching opening hours on given date
 async function checkHours (fromInput, toInput, topic, payload, weekday) {
-  // Find, at the moment, one office with matching opening hours on mondays
   const filteredArray = dentists.filter(function (obj) {
     let checkFrom = 0
     if (weekday === 'monday') {
@@ -75,13 +69,12 @@ async function checkHours (fromInput, toInput, topic, payload, weekday) {
     checkTo = parseInt(checkTo)
     fromInput = parseInt(fromInput)
     toInput = parseInt(toInput)
-    // console.log('office', checkFrom, checkTo)
     return (((checkFrom <= fromInput && checkTo >= fromInput) || (checkFrom <= toInput && checkTo >= toInput)))
   }).map(function (obj) {
     return obj.id
   })
 
-  // Checking if those hours are within that gap
+  // Publish to the broker the offices that have passed the filtration
   for (let i = 0; i <= filteredArray.length - 1; i++) {
     const filter = { id: filteredArray[i] }
     const officesToPublish = await dentistOffices.find(filter)
@@ -89,6 +82,7 @@ async function checkHours (fromInput, toInput, topic, payload, weekday) {
   }
 }
 
+// Temp array copy of the dentist offices
 const dentists = [
   {
     id: 1,
