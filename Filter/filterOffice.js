@@ -31,14 +31,13 @@ function checkAvailabilityFilter (topic, message) {
     dayMap.set(4, 'thursday')
     dayMap.set(5, 'friday')
     const weekday = dayMap.get(day)
-    dayIdentifyer(topic, message, weekday)
+    timeCleaner(topic, message, weekday)
   } else {
     console.log('Weekend')
   }
-  // dayIdentifyer(topic, message)
 }
 
-function dayIdentifyer (topic, message, weekday) {
+function timeCleaner (topic, message, weekday) {
   // Cleaning up the input
   let payloadFrom = JSON.stringify(message.from)
   payloadFrom = payloadFrom.replace('"', '')
@@ -54,7 +53,7 @@ function dayIdentifyer (topic, message, weekday) {
 async function checkHours (fromInput, toInput, topic, payload, weekday) {
   // Find, at the moment, one office with matching opening hours on mondays
   const filteredArray = dentists.filter(function (obj) {
-    let checkFrom
+    let checkFrom = 0
     if (weekday === 'monday') {
       checkFrom = obj.openinghours.monday.split('-')
     } else if (weekday === 'tuesday') {
@@ -76,35 +75,17 @@ async function checkHours (fromInput, toInput, topic, payload, weekday) {
     checkTo = parseInt(checkTo)
     fromInput = parseInt(fromInput)
     toInput = parseInt(toInput)
-    return (checkFrom <= fromInput && checkTo >= fromInput) || (checkFrom <= toInput && checkTo >= toInput)
+    // console.log('office', checkFrom, checkTo)
+    return (((checkFrom <= fromInput && checkTo >= fromInput) || (checkFrom <= toInput && checkTo >= toInput)))
   }).map(function (obj) {
     return obj.id
   })
 
-  let dent = dentists.find(dent => dent.openinghours.monday === '7:00-19:00')
-
-  dent = dent.openinghours.monday
-  const myArray = dent.split('-')
-
-  // Identifying when that office opens and close
-  let officeHourFrom = myArray[0]
-  let officeHourTo = myArray[1]
-
-  // Converting those hours into comparable variables, including the user inputs
-  officeHourFrom = parseInt(officeHourFrom)
-  officeHourTo = parseInt(officeHourTo)
-  fromInput = parseInt(fromInput)
-  toInput = parseInt(toInput)
-
   // Checking if those hours are within that gap
-  if ((officeHourFrom <= fromInput && officeHourTo >= fromInput) || (officeHourFrom <= toInput && officeHourTo >= toInput)) {
-    for (let i = 0; i <= filteredArray.length - 1; i++) {
-      const filter = { id: filteredArray[i] }
-      const officesToPublish = await dentistOffices.find(filter)
-      publisher.publishFilteredOffices(officesToPublish)
-    }
-  } else {
-    console.log('It does not work')
+  for (let i = 0; i <= filteredArray.length - 1; i++) {
+    const filter = { id: filteredArray[i] }
+    const officesToPublish = await dentistOffices.find(filter)
+    publisher.publishFilteredOffices(officesToPublish)
   }
 }
 
