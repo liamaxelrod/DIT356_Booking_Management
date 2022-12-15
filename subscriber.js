@@ -63,7 +63,6 @@ function subscribeTopic () {
 client.on('message', (topic, payload) => {
   if (topic === 'dentistimo/dentist-office/fetch-availability') {
     pipeOffice.filterTopic(topic, payload)
-    console.log(payload)
   } else if (topic === 'dentistimo/booking/create-booking') {
     console.log(JSON.stringify(payload))
     pipeBooking.filterTopic(topic, payload)

@@ -1,3 +1,6 @@
+const dentistOffices = require('../models/dentistOffice')
+const publisher = require('../publisher')
+
 module.exports = { filterTopic }
 
 // const mongoose = require('mongoose')
@@ -21,7 +24,6 @@ function checkAvailabilityFilter (topic, message) {
 
   // If weekday: continue. If weekend: Terminate
   if (day > 0 && day < 6) {
-    console.log('Weekday')
     const dayMap = new Map()
     dayMap.set(1, 'monday')
     dayMap.set(2, 'tuesday')
@@ -29,7 +31,6 @@ function checkAvailabilityFilter (topic, message) {
     dayMap.set(4, 'thursday')
     dayMap.set(5, 'friday')
     const weekday = dayMap.get(day)
-    console.log(weekday)
     dayIdentifyer(topic, message, weekday)
   } else {
     console.log('Weekend')
@@ -42,7 +43,6 @@ function dayIdentifyer (topic, message, weekday) {
   let payloadFrom = JSON.stringify(message.from)
   payloadFrom = payloadFrom.replace('"', '')
   payloadFrom = payloadFrom.replace('"', '')
-  console.log(payloadFrom)
 
   let payloadTo = JSON.stringify(message.to)
   payloadTo = payloadTo.replace('"', '')
@@ -51,7 +51,7 @@ function dayIdentifyer (topic, message, weekday) {
 }
 
 // Function for getting all offices
-function checkHours (fromInput, toInput, topic, payload, weekday) {
+async function checkHours (fromInput, toInput, topic, payload, weekday) {
   // Find, at the moment, one office with matching opening hours on mondays
   const filteredArray = dentists.filter(function (obj) {
     let checkFrom
@@ -81,11 +81,8 @@ function checkHours (fromInput, toInput, topic, payload, weekday) {
     return obj.id
   })
 
-  console.log(filteredArray)
-
   let dent = dentists.find(dent => dent.openinghours.monday === '7:00-19:00')
 
-  console.log(dentists.length)
   dent = dent.openinghours.monday
   const myArray = dent.split('-')
 
@@ -100,8 +97,12 @@ function checkHours (fromInput, toInput, topic, payload, weekday) {
   toInput = parseInt(toInput)
 
   // Checking if those hours are within that gap
-  if (officeHourFrom <= fromInput && toInput <= officeHourTo) {
-    console.log('Step 2 works')
+  if ((officeHourFrom <= fromInput && officeHourTo >= fromInput) || (officeHourFrom <= toInput && officeHourTo >= toInput)) {
+    for (let i = 0; i <= filteredArray.length - 1; i++) {
+      const filter = { id: filteredArray[i] }
+      const officesToPublish = await dentistOffices.find(filter)
+      publisher.publishFilteredOffices(officesToPublish)
+    }
   } else {
     console.log('It does not work')
   }

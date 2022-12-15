@@ -1,4 +1,4 @@
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice }
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishFilteredOffices }
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -87,6 +87,15 @@ function publishAllOffices (message) {
 function publishOneOffice (message) {
   const foundOfficeTopic = 'dentistimo/dentist-office/one-office'
   client.publish(foundOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+function publishFilteredOffices (message) {
+  const filteredOfficeTopic = 'dentistimo/dentist-office/filtered-office'
+  client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }
