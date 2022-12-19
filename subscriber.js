@@ -5,6 +5,7 @@ const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const pipeBooking = require('../booking-management/Filter/filterBooking')
 const pipeDentist = require('../booking-management/Filter/filterDentist')
 const pipeOffice = require('../booking-management/Filter/filterOffice')
+const timeAppointments = require('../booking-management/publishAppointments')
 
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -22,6 +23,7 @@ function subscribeTopic () {
   // User booking appointments
   const topic1 = 'dentistimo/booking/create-booking'
   const topic2 = 'dentistimo/booking/delete-booking'
+  const timeAvailability = 'dentistimo/appointment/free'
 
   // Dentist breaks
   const topic3 = 'dentistimo/dentist/breaks'
@@ -56,6 +58,10 @@ function subscribeTopic () {
       console.log(`Subscribe to topic '${officeTopic2}'`)
       console.log(clientId)
     })
+    client.subscribe([timeAvailability], () => {
+      console.log(`Subscribe to topic '${timeAvailability}'`)
+      console.log(clientId)
+    })
   })
 }
 
@@ -77,6 +83,8 @@ client.on('message', (topic, payload) => {
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
     // console.log(message)
     pipeBooking.filterTopic(topic, payload)
+  } else if (topic === 'dentistimo/appointment/free') {
+    timeAppointments.testFunction(topic, payload)
   } else {
     console.log('Not a correct topic')
   }
