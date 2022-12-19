@@ -1,7 +1,7 @@
 const dentistOffices = require('../models/dentistOffice')
 const publisher = require('../publisher')
 module.exports = { filterTopic }
-
+// Testing
 // Send to another filter
 function filterTopic (topic, message) {
   if (topic === 'dentistimo/dentist-office/fetch-availability') {
@@ -46,37 +46,43 @@ function timeCleaner (topic, message, weekday) {
 
 // Find offices with matching opening hours on given date
 async function checkHours (fromInput, toInput, topic, payload, weekday) {
-  const filteredArray = dentists.filter(function (obj) {
-    let checkFrom = 0
+  const openingHoursDay = dentists.filter(function (obj) {
+    let dentistOpenFrom
+    let dentistClosing
+    // Checking which weekday
     if (weekday === 'monday') {
-      checkFrom = obj.openinghours.monday.split('-')
+      dentistOpenFrom = obj.openinghours.monday.split('-')
+      dentistClosing = dentistOpenFrom[1]
     } else if (weekday === 'tuesday') {
-      checkFrom = obj.openinghours.tuesday.split('-')
+      dentistOpenFrom = obj.openinghours.tuesday.split('-')
+      dentistClosing = dentistOpenFrom[1]
     } else if (weekday === 'wednesday') {
-      checkFrom = obj.openinghours.wednesday.split('-')
+      dentistOpenFrom = obj.openinghours.wednesday.split('-')
+      dentistClosing = dentistOpenFrom[1]
     } else if (weekday === 'thursday') {
-      checkFrom = obj.openinghours.thursday.split('-')
+      dentistOpenFrom = obj.openinghours.thursday.split('-')
+      dentistClosing = dentistOpenFrom[1]
     } else if (weekday === 'friday') {
-      checkFrom = obj.openinghours.friday.split('-')
+      dentistOpenFrom = obj.openinghours.friday.split('-')
+      dentistClosing = dentistOpenFrom[1]
     } else {
       console.log('Does not work')
     }
-    checkFrom = checkFrom[0]
-    checkFrom = parseInt(checkFrom)
+    // Identifying office opening hours, closing hours & checking user input time 'from' and 'to'
+    dentistOpenFrom = dentistOpenFrom[0]
+    dentistOpenFrom = parseInt(dentistOpenFrom)
     fromInput = parseInt(fromInput)
-    let checkTo = obj.openinghours.monday.split('-')
-    checkTo = checkTo[1]
-    checkTo = parseInt(checkTo)
+    dentistClosing = parseInt(dentistClosing)
     fromInput = parseInt(fromInput)
     toInput = parseInt(toInput)
-    return (((checkFrom <= fromInput && checkTo >= fromInput) || (checkFrom <= toInput && checkTo >= toInput)))
+    return (((dentistOpenFrom <= fromInput && dentistClosing >= fromInput) || (dentistOpenFrom <= toInput && dentistClosing >= toInput) || (dentistOpenFrom >= fromInput && dentistClosing <= toInput)))
   }).map(function (obj) {
     return obj.id
   })
-
   // Publish to the broker the offices that have passed the filtration
-  for (let i = 0; i <= filteredArray.length - 1; i++) {
-    const filter = { id: filteredArray[i] }
+  for (let i = 0; i <= openingHoursDay.length - 1; i++) {
+    const dentistOffice = openingHoursDay[i]
+    const filter = { id: dentistOffice }
     const officesToPublish = await dentistOffices.find(filter)
     publisher.publishFilteredOffices(officesToPublish)
   }
