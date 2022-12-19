@@ -1,4 +1,5 @@
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay }
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishFilteredOffices, publishAllDentistAppointments, publishAllDentistAppointmentsDay }
+
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -93,6 +94,15 @@ function publishOneOffice (message) {
   })
 }
 
+function publishFilteredOffices (message) {
+  const filteredOfficeTopic = 'dentistimo/dentist-office/filtered-office'
+  client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
 function publishAllDentistAppointments (message) {
   const foundAppointments = 'dentistimo/dentist-appointment/all-appointments'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
@@ -101,6 +111,7 @@ function publishAllDentistAppointments (message) {
     }
   })
 }
+
 function publishAllDentistAppointmentsDay (message) {
   const foundAppointments = 'dentistimo/dentist-appointment/all-appointments-day'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
