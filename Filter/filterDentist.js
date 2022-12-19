@@ -92,7 +92,7 @@ async function getAppointmentsDentistDay (message) {
       const AppointmentsDay = await Booking.find({ dentistid: message.dentistid, date: message.date })
       // Checks that the query response is not empty
       if (AppointmentsDay.length) {
-        publisher.publishAllDentistAppointments(AppointmentsDay)
+        publisher.publishAllDentistAppointmentsDay(AppointmentsDay)
       } else {
         console.log('Could not find any appointments that day')
       }

@@ -15,6 +15,8 @@ function filterTopic (topic, message) {
     OfficeFilter(message)
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
     OfficeFilter(message)
+  } else if (topic === 'dentistimo/user-appointment/get-all-appointments-day') {
+    getAppointmentsUserDay(message)
   } else {
     console.log('Unable to read topic 1')
   }
@@ -131,6 +133,23 @@ async function getOneOffice (message) {
       publisher.publishOneOffice(findOffice)
     } else {
       publisher.publishOneOffice('Could not find the dentist office')
+    }
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+// Get all appointments for a dentist a certain day
+async function getAppointmentsUserDay (message) {
+  try {
+    if (message.userid != null && message.date != null) {
+      const AppointmentsDay = await Booking.find({ userid: message.userid, date: message.date })
+      // Checks that the query response is not empty
+      if (AppointmentsDay.length) {
+        publisher.publishAllUserAppointmentsDay(AppointmentsDay)
+      } else {
+        console.log('Could not find any appointments that day')
+      }
     }
   } catch (e) {
     console.log(e.message)
