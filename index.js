@@ -18,7 +18,7 @@ const client = mqtt.connect(connectUrl, {
 
 // Set up default mongoose connection
 
-const mongoURI = 'mongodb://localhost:27017/Dentistimo'
+const mongoURI = process.env.MONGODB_URI
 
 // Connect to MongoDB
 mongoose.connect(

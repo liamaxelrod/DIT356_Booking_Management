@@ -111,6 +111,7 @@ function publishAllDentistAppointments (message) {
     }
   })
 }
+
 function publishAllDentistAppointmentsDay (message) {
   const foundAppointments = 'dentistimo/dentist-appointment/all-appointments-day'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
