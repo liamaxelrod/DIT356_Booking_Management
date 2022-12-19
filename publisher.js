@@ -1,13 +1,5 @@
-<<<<<<< HEAD
 module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishFilteredOffices, publishAllDentistAppointments, publishAllDentistAppointmentsDay }
 
-=======
-<<<<<<< publisher.js
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishFilteredOffices }
-=======
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishFilteredOffices, publishAllDentistAppointments, publishAllDentistAppointmentsDay }
->>>>>>> publisher.js
->>>>>>> de376abec06c2d79ceeffc6a98e7cca828121f37
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -102,7 +94,6 @@ function publishOneOffice (message) {
   })
 }
 
-<<<<<<< HEAD
 function publishFilteredOffices (message) {
   const filteredOfficeTopic = 'dentistimo/dentist-office/filtered-office'
   client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
@@ -111,13 +102,7 @@ function publishFilteredOffices (message) {
     }
   })
 }
-=======
-<<<<<<< publisher.js
-function publishFilteredOffices (message) {
-  const filteredOfficeTopic = 'dentistimo/dentist-office/filtered-office'
-  client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
-=======
->>>>>>> de376abec06c2d79ceeffc6a98e7cca828121f37
+
 function publishAllDentistAppointments (message) {
   const foundAppointments = 'dentistimo/dentist-appointment/all-appointments'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
@@ -129,10 +114,6 @@ function publishAllDentistAppointments (message) {
 function publishAllDentistAppointmentsDay (message) {
   const foundAppointments = 'dentistimo/dentist-appointment/all-appointments-day'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
-<<<<<<< HEAD
-=======
->>>>>>> publisher.js
->>>>>>> de376abec06c2d79ceeffc6a98e7cca828121f37
     if (error) {
       console.error(error)
     }
