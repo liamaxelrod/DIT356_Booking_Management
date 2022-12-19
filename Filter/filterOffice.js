@@ -1,7 +1,7 @@
 const dentistOffices = require('../models/dentistOffice')
 const publisher = require('../publisher')
 module.exports = { filterTopic }
-
+// Testing
 // Send to another filter
 function filterTopic (topic, message) {
   if (topic === 'dentistimo/dentist-office/fetch-availability') {
