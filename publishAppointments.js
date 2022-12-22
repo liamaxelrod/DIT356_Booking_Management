@@ -9,7 +9,7 @@ function testFunction (topic, message) {
   console.log(message)
   const d = new Date(message.date)
   const day = d.getDay()
-
+  console.log(day)
   // If weekday: continue. If weekend: Terminate, hashmap the days into matching day
   if (day > 0 && day < 6) {
     const dayMap = new Map()
@@ -47,25 +47,33 @@ function checkHours (topic, payload, weekday) {
     let checkTo = obj.openinghours.monday.split('-')
     checkTo = checkTo[1]
     checkTo = parseFloat(checkTo)
-    console.log(checkFrom, checkTo)
-    const list = []
+    const timeSlots = []
     for (let i = checkFrom; i <= checkTo - 1; i++) {
-      list.push(i + ':00')
-      list.push(i + ':30')
+      timeSlots.push(i + ':00')
+      timeSlots.push(i + ':30')
     }
-
-    for (let i = 0; i < list.length; i++) {
-      console.log(list[i])
-      await Booking.find({ time: list[i] }, function (date) {
-        console.log('Found it', date)
-      })
+    const inputDentistOfficeId = payload.dentistid
+    console.log(inputDentistOfficeId)
+    const inputDate = payload.date
+    const allAppointments = await Booking.find({ date: inputDate, dentistid: inputDentistOfficeId }) // we must change date in the database for bookings
+    const stringAppointment = (JSON.stringify(allAppointments))
+    const freeTimeSlots = []
+    for (let i = 0; i <= timeSlots.length - 1; i++) {
+      if (!stringAppointment.includes(timeSlots[i])) {
+        freeTimeSlots.push(timeSlots[i])
+      }
     }
+    availableTimeSlots(freeTimeSlots)
+    // readInput(array)
     return (checkFrom, checkTo)
   }).map(function (obj) {
     return obj.id
   })
 }
 
+function availableTimeSlots (array) {
+  console.log(array)
+}
 // Temp array copy of the dentist offices
 const dentists = [
   {

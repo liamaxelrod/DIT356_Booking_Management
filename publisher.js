@@ -96,7 +96,7 @@ function publishOneOffice (message) {
 
 function publishFilteredOffices (message) {
   const filteredOfficeTopic = 'dentistimo/dentist-office/filtered-office'
-  client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+  client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 2, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

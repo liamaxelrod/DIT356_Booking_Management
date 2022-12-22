@@ -26,6 +26,7 @@ function checkAvailabilityFilter (topic, message) {
     dayMap.set(4, 'thursday')
     dayMap.set(5, 'friday')
     const weekday = dayMap.get(day)
+    console.log(weekday)
     timeCleaner(topic, message, weekday)
   } else {
     console.log('Weekend')

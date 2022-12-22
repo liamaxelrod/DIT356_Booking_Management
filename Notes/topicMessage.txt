@@ -5,3 +5,9 @@ Example:
   "from": "08:00:00",
   "to": "13:00:00"
 }
+
+
+dentistimo/appointment/free
+{
+  "date": "2022-12-22"
+}
