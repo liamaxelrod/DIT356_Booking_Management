@@ -27,6 +27,7 @@ function subscribeTopic () {
   const topic3 = 'dentistimo/dentist/breaks'
   const topic4 = 'dentistimo/dentist-appointment/get-all-appointments'
   const topic5 = 'dentistimo/dentist-appointment/get-all-appointments-day'
+  const topic6 = 'dentistimo/user-appointment/get-all-appointments-day'
 
   // Dentist Office topics:
   const officeTopic = 'dentistimo/dentist-office/fetch-all'
@@ -64,6 +65,9 @@ function subscribeTopic () {
     client.subscribe([topic5], () => {
       console.log(`Subscribe to topic '${topic5}'`)
     })
+    client.subscribe([topic6], () => {
+      console.log(`Subscribe to topic '${topic6}'`)
+    })
   })
 }
 
@@ -91,6 +95,9 @@ client.on('message', (topic, payload) => {
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments-day') {
     // console.log(message)
     pipeDentist.filterTopic(topic, payload)
+  } else if (topic === 'dentistimo/user-appointment/get-all-appointments-day') {
+    // console.log(message)
+    pipeBooking.filterTopic(topic, payload)
   } else {
     console.log('Not a correct topic')
   }
