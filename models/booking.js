@@ -8,8 +8,7 @@ const bookingSchema = new Schema({
   issuance: { type: Number },
   date: { type: String },
   time: { type: String },
-  fika: { type: String },
-  lunch: { type: String }
+  appointmentType: { type: String }
 })
 
 module.exports = mongoose.model('booking', bookingSchema)

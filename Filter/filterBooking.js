@@ -139,7 +139,7 @@ async function getOneOffice (message) {
   }
 }
 
-// Get all appointments for a dentist a certain day
+// Get all appointments for a user a certain day
 async function getAppointmentsUserDay (message) {
   try {
     if (message.userid != null && message.date != null) {

@@ -95,31 +95,30 @@ function checkAvailabilityFilter (topic, message) {
 
 async function checkBreaksFilter (topic, message) {
   try {
-    const dentistId = message.dentistid
+    // const dentistId = message.dentistid
     const checkDate = message.date
-    const DentistFika = message.fika
-    const DentistLunch = message.lunch
+    const type = message.appointmentType
+    // const messageTime = message.time
     let fikaCount = 0
     let lunchCount = 0
 
     // Check for and add fika breaks
-    if (message.fika != null) {
-      Booking.find({ dentistid: dentistId, fika: DentistFika, date: checkDate }, function (_err, DentistFika) {
-        fikaCount = Object.keys(DentistFika).length
-        if (DentistFika != null) {
+    console.log(type)
+    Booking.findOne({ appointmentType: type, date: checkDate }, function (_err, type) {
+      // console.log(type[0].time)
+      if (message.appointmentType === 'fika') {
+        if (type != null) {
+          fikaCount = Object.keys(type).length
           if (fikaCount < 1) {
             saveBreak(topic, message)
           } else {
             console.log('There is a already a registered fika break this day')
           }
         }
-      })
-    }
-    // Check for and add lunch breaks
-    if (message.lunch != null) {
-      Booking.find({ dentistid: dentistId, lunch: DentistLunch, date: checkDate }, function (_err, DentistLunch) {
-        lunchCount = Object.keys(DentistLunch).length
-        if (DentistLunch != null) {
+      }
+      if (message.appointmentType === 'lunch') {
+        if (type != null) {
+          lunchCount = Object.keys(type).length
           if (lunchCount < 1) {
             saveBreak(topic, message)
             const nextThirty = LunchFilter(topic, message)
@@ -128,8 +127,8 @@ async function checkBreaksFilter (topic, message) {
             console.log('There is a already a registered lunch break this day')
           }
         }
-      })
-    }
+      }
+    })
   } catch (e) {
     console.log(e.message)
   }
@@ -147,12 +146,12 @@ function LunchFilter (topic, message) {
 // This function will save the break in the database depending on the breakType, 'break' || 'lunch'
 function saveBreak (topic, message) {
   console.log(message)
-  if (message.fika != null) {
+  if (message.appointmentType === 'fika') {
     const breakFika = new Booking(message)
     breakFika.save((_err) => {
       // saved!
     })
-  } else if (message.lunch != null) {
+  } else if (message.appointmentType === 'lunch') {
     const breakLunch = new Booking(message)
     breakLunch.save((_err) => {
       // saved!
@@ -168,7 +167,7 @@ function saveBreak (topic, message) {
 async function getAppointmentsDentist (message) {
   try {
     if (message.dentistid != null) {
-    // Find bookings with dentisid as identifier
+      // Find bookings with dentisid as identifier
       const filter = { dentistid: message.dentistid }
       const getAppointments = await Booking.find(filter)
       // Checks that the query response is not empty
