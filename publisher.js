@@ -1,4 +1,4 @@
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices }
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments }
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -123,6 +123,16 @@ function publishAllDentistAppointmentsDay (message) {
 // Publish all appointments a user have a certain day.
 function publishAllUserAppointmentsDay (message) {
   const foundAppointments = 'dentistimo/user-appointment/all-appointments-day'
+  client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+// Publish all appointments for a user.
+function publishAllUserAppointments (message) {
+  const foundAppointments = 'dentistimo/user-appointment/all-appointments'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
