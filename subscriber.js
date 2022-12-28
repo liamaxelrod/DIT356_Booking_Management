@@ -39,30 +39,24 @@ function subscribeTopic () {
     console.log('Connected')
     client.subscribe([officeAvailability], () => {
       console.log(`Subscribe to topic '${officeAvailability}'`)
-      console.log(clientId)
     })
     client.subscribe([topic1], () => {
       console.log(`Subscribe to topic '${topic1}'`)
-      console.log(clientId)
     })
     client.subscribe([topic2], () => {
       console.log(`Subscribe to topic '${topic2}'`)
-      console.log(clientId)
     })
     client.subscribe([topic3], () => {
       console.log(`Subscribe to topic '${topic3}'`)
     })
     client.subscribe([officeTopic], () => {
       console.log(`Subscribe to topic '${officeTopic}'`)
-      console.log(clientId)
     })
     client.subscribe([officeTopic2], () => {
       console.log(`Subscribe to topic '${officeTopic2}'`)
-      console.log(clientId)
     })
     client.subscribe([timeAvailability], () => {
       console.log(`Subscribe to topic '${timeAvailability}'`)
-      console.log(clientId)
     })
     client.subscribe([topic4], () => {
       console.log(`Subscribe to topic '${topic4}'`)

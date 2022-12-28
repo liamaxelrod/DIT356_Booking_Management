@@ -1,6 +1,7 @@
 module.exports = { testFunction }
+const { objectToString } = require('@vue/shared')
 const Booking = require('../booking-management/models/booking')
-// const dentistOffices = require('../models/dentistOffice')
+// const dentistOffices = require('../models/dentistOfficeId')
 // const publisher = require('../publisher')
 
 // This filter will check the availability, similarly to the booking appointment
@@ -9,7 +10,6 @@ function testFunction (topic, message) {
   console.log(message)
   const d = new Date(message.date)
   const day = d.getDay()
-  console.log(day)
   // If weekday: continue. If weekend: Terminate, hashmap the days into matching day
   if (day > 0 && day < 6) {
     const dayMap = new Map()
@@ -21,7 +21,7 @@ function testFunction (topic, message) {
     const weekday = dayMap.get(day)
     checkHours(topic, message, weekday)
   } else {
-    console.log('Weekend')
+    console.log('Weekend') // Add error message
   }
 }
 
@@ -29,18 +29,24 @@ function testFunction (topic, message) {
 function checkHours (topic, payload, weekday) {
   dentists.filter(async function (obj) {
     let checkFrom = 0
-    if (weekday === 'monday') {
+    let numDentists = 0
+    if ((weekday === 'monday') && (obj.id === payload.dentistOfficeId)) {
       checkFrom = obj.openinghours.monday.split('-')
-    } else if (weekday === 'tuesday') {
+      numDentists = obj.dentists
+    } else if (weekday === 'tuesday' && obj.id === payload.dentistOfficeId) {
       checkFrom = obj.openinghours.tuesday.split('-')
-    } else if (weekday === 'wednesday') {
+      numDentists = obj.dentists
+    } else if (weekday === 'wednesday' && obj.id === payload.dentistOfficeId) {
       checkFrom = obj.openinghours.wednesday.split('-')
-    } else if (weekday === 'thursday') {
+      numDentists = obj.dentists
+    } else if (weekday === 'thursday' && obj.id === payload.dentistOfficeId) {
       checkFrom = obj.openinghours.thursday.split('-')
-    } else if (weekday === 'friday') {
+      numDentists = obj.dentists
+    } else if (weekday === 'friday' && obj.id === payload.dentistOfficeId) {
       checkFrom = obj.openinghours.friday.split('-')
+      numDentists = obj.dentists
     } else {
-      console.log('Does not work')
+      return
     }
     checkFrom = checkFrom[0]
     checkFrom = parseFloat(checkFrom)
@@ -49,21 +55,32 @@ function checkHours (topic, payload, weekday) {
     checkTo = parseFloat(checkTo)
     const timeSlots = []
     for (let i = checkFrom; i <= checkTo - 1; i++) {
-      timeSlots.push(i + ':00')
-      timeSlots.push(i + ':30')
+      for( let j = 0; j < numDentists; j++){
+        timeSlots.push(i + ':00')
+        timeSlots.push(i + ':30')
+      }
     }
-    const inputDentistOfficeId = payload.dentistid
-    console.log(inputDentistOfficeId)
+    console.log(numDentists, "num of dentists")
+    const inputDentistOfficeId = payload.dentistOfficeId
     const inputDate = payload.date
-    const allAppointments = await Booking.find({ date: inputDate, dentistid: inputDentistOfficeId }) // we must change date in the database for bookings
+    const allAppointments = await Booking.find({ date: inputDate, dentistOfficeId: inputDentistOfficeId }) 
     const stringAppointment = (JSON.stringify(allAppointments))
     const freeTimeSlots = []
+    if(allAppointments.dentistOfficeId === inputDentistOfficeId){
+      console.log('works')
+    }
     for (let i = 0; i <= timeSlots.length - 1; i++) {
       if (!stringAppointment.includes(timeSlots[i])) {
         freeTimeSlots.push(timeSlots[i])
       }
     }
+    
+    console.log(payload.dentistOfficeId)
+    if( Object.values(freeTimeSlots) === null){
+      console.log('True')
+    }
     availableTimeSlots(freeTimeSlots)
+
     // readInput(array)
     return (checkFrom, checkTo)
   }).map(function (obj) {
