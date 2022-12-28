@@ -7,7 +7,6 @@ const Booking = require('../booking-management/models/booking')
 // This filter will check the availability, similarly to the booking appointment
 function testFunction (topic, message) {
   message = JSON.parse(message)
-  console.log(message)
   const d = new Date(message.date)
   const day = d.getDay()
   // If weekday: continue. If weekend: Terminate, hashmap the days into matching day
@@ -60,25 +59,29 @@ function checkHours (topic, payload, weekday) {
         timeSlots.push(i + ':30')
       }
     }
-    console.log(numDentists, "num of dentists")
     const inputDentistOfficeId = payload.dentistOfficeId
     const inputDate = payload.date
     const allAppointments = await Booking.find({ date: inputDate, dentistOfficeId: inputDentistOfficeId }) 
-    const stringAppointment = (JSON.stringify(allAppointments))
-    const freeTimeSlots = []
-    if(allAppointments.dentistOfficeId === inputDentistOfficeId){
-      console.log('works')
+
+    let count = 0
+    for (let properties in allAppointments) {
+      count = count +1
     }
+
+    const stringAppointment = JSON.stringify(allAppointments)
+    const freeTimeSlots = []
+
+    let dif = numDentists - count
+    console.log(dif)
     for (let i = 0; i <= timeSlots.length - 1; i++) {
       if (!stringAppointment.includes(timeSlots[i])) {
         freeTimeSlots.push(timeSlots[i])
-      }
+      } else if (dif > 0) {
+        freeTimeSlots.push(timeSlots[i])
+        dif = dif - 1
+      } 
     }
     
-    console.log(payload.dentistOfficeId)
-    if( Object.values(freeTimeSlots) === null){
-      console.log('True')
-    }
     availableTimeSlots(freeTimeSlots)
 
     // readInput(array)
