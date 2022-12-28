@@ -10,7 +10,7 @@ const publisher = require('../publisher')
 function filterTopic (topic, message) {
   message = JSON.parse(message)
   if (topic === 'dentistimo/dentist/breaks') {
-    checkAvailabilityFilter(topic, message)
+    availabilityFilter(topic, message)
   } else if (topic === 'dentistimo/booking/lunch') {
     console.log(message)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments') {
@@ -48,13 +48,13 @@ function filterTopic (topic, message) {
 //   }
 // }
 
-function checkAvailabilityFilter (topic, message) {
-  if (message.date === '' || null) {
-    console.log('No date')
-  } else {
-    checkBreaksFilter(topic, message)
-  }
-}
+// function checkAvailabilityFilter (topic, message) {
+//   if (message.date === '' || null) {
+//     console.log('No date')
+//   } else {
+//     checkBreaksFilter(topic, message)
+//   }
+// }
 
 // async function checkAvailability (topic, message) {
 //   try {
@@ -95,17 +95,15 @@ function checkAvailabilityFilter (topic, message) {
 
 async function checkBreaksFilter (topic, message) {
   try {
-    // const dentistId = message.dentistid
     const checkDate = message.date
+    const checkDentist = message.dentistid
     const type = message.appointmentType
-    // const messageTime = message.time
     let fikaCount = 0
     let lunchCount = 0
 
     // Check for and add fika breaks
     console.log(type)
-    Booking.findOne({ appointmentType: type, date: checkDate }, function (_err, type) {
-      // console.log(type[0].time)
+    Booking.find({ appointmentType: type, date: checkDate, dentistid: checkDentist }, function (_err, type) {
       if (message.appointmentType === 'fika') {
         if (type != null) {
           fikaCount = Object.keys(type).length
@@ -143,6 +141,32 @@ function LunchFilter (topic, message) {
   return message
 }
 
+function availabilityFilter (topic, message) {
+  async function checkAvailability (topic, message) {
+    try {
+      const checkDate = message.date
+      const checkTime = message.time
+      const checkDentist = message.dentistid
+      // Find booking with date, time and dentist as identifier
+      Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist }, function (_err, checkDate, checkTime, checkDentist) {
+        if (checkDate == null && checkTime == null && checkDentist == null) {
+          checkBreaksFilter(topic, message)
+        } else {
+          console.log('It is not available')
+          message = null
+          publisher.publishBookingDate(topic, message)
+        }
+      })
+    } catch (e) {
+      console.log(e.message)
+    }
+  }
+  if (message.date === '' || null) {
+    console.log('No date')
+  } else {
+    checkAvailability(topic, message)
+  }
+}
 // This function will save the break in the database depending on the breakType, 'break' || 'lunch'
 function saveBreak (topic, message) {
   console.log(message)
