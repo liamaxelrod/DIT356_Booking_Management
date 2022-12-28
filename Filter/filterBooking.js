@@ -61,6 +61,10 @@ function filterMakeAppointment (topic, message) {
     if (userIdInput != null) {
       keyCount = Object.keys(userIdInput).length
       if (keyCount < 2) {
+        // Issuance generator
+        let issuance = Math.random() * 10000000
+        issuance = Math.round(issuance)
+        message.issuance = issuance
         saveAppointment(topic, message)
       } else {
         console.log('Too many bookings')
