@@ -82,21 +82,15 @@ client.on('message', (topic, payload) => {
     pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist/breaks') {
     pipeDentist.filterTopic(topic, payload)
-    // console.log(message)
   } else if (topic === 'dentistimo/dentist-office/fetch-all') {
-    // console.log(message)
     pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
-    // console.log(message)
     pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments') {
-    // console.log(message)
     pipeDentist.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments-day') {
-    // console.log(message)
     pipeDentist.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/user-appointment/get-all-appointments-day') {
-    // console.log(message)
     pipeBooking.filterTopic(topic, payload)
   } else {
     console.log('Not a correct topic')

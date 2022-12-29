@@ -18,66 +18,6 @@ function filterTopic (topic, message) {
   }
 }
 
-async function checkBreaksFilter (topic, message) {
-  try {
-    const checkDate = message.date
-    const checkDentist = message.dentistid
-    const type = message.appointmentType
-    let fikaCount = 0
-    let lunchCount = 0
-
-    // Check for and add fika breaks
-    Booking.find({ appointmentType: type, date: checkDate, dentistid: checkDentist }, function (_err, type) {
-      if (message.appointmentType === 'fika') {
-        if (type != null) {
-          fikaCount = Object.keys(type).length
-          if (fikaCount < 1) {
-            saveBreak(topic, message)
-          } else {
-            console.log('There is a already a registered fika break this day')
-          }
-        }
-      }
-      if (message.appointmentType === 'lunch') {
-        if (type != null) {
-          lunchCount = Object.keys(type).length
-          if (lunchCount < 1) {
-            saveBreak(topic, message)
-            const nextThirty = LunchFilter(topic, message)
-            saveBreak(topic, nextThirty)
-          } else {
-            console.log('There is a already a registered lunch break this day')
-          }
-        }
-      }
-    })
-  } catch (e) {
-    console.log(e.message)
-  }
-}
-
-// Adding another break of 30 minuts for the lunch
-function LunchFilter (topic, message) {
-  const incomingLunch = message.time
-  console.log(incomingLunch)
-  let nextHalfHour = null
-  // If a lunch break is registered at a whole hour
-  if (incomingLunch.includes('00')) {
-    nextHalfHour = incomingLunch.replace(':00', ':30')
-    message.time = nextHalfHour
-  } else {
-    // If a lunch break is registered at the middle of the hour
-    let wholeHour
-    wholeHour = incomingLunch.substring(0, 2)
-    wholeHour = parseInt(wholeHour)
-    wholeHour = wholeHour + 1
-    wholeHour = wholeHour.toString()
-    wholeHour = wholeHour.concat(':00')
-    message.time = wholeHour
-  }
-  return message
-}
-
 function availabilityFilter (topic, message) {
   async function checkAvailability (topic, message) {
     try {
@@ -86,7 +26,6 @@ function availabilityFilter (topic, message) {
       const checkDentist = message.dentistid
       // Find booking with date, time and dentist as identifier
       const lunchCheck = await LunchControl(topic, message)
-      console.log(lunchCheck)
       if (lunchCheck === null) {
         return null
       } else {
@@ -111,11 +50,74 @@ function availabilityFilter (topic, message) {
   }
 }
 
+// Check if there is a registred lunch break or fika break for a dentist a specific day.
+async function checkBreaksFilter (topic, message) {
+  try {
+    const checkDate = message.date
+    const checkDentist = message.dentistid
+    const type = message.appointmentType
+    let fikaCount = 0
+    let lunchCount = 0
+
+    // Check for and add fika breaks
+    Booking.find({ appointmentType: type, date: checkDate, dentistid: checkDentist }, function (_err, type) {
+      if (message.appointmentType === 'fika') {
+        if (type != null) {
+          fikaCount = Object.keys(type).length
+          if (fikaCount < 1) {
+            // books fika break
+            saveBreak(topic, message)
+          } else {
+            console.log('There is a already a registered fika break this day')
+          }
+        }
+      }
+      if (message.appointmentType === 'lunch') {
+        if (type != null) {
+          lunchCount = Object.keys(type).length
+          if (lunchCount < 1) {
+            // books first half hour of the lunch
+            saveBreak(topic, message)
+            const nextThirty = LunchFilter(topic, message)
+            // books the second half hour of the lunch
+            saveBreak(topic, nextThirty)
+          } else {
+            console.log('There is a already a registered lunch break this day')
+          }
+        }
+      }
+    })
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+// Adding another break of 30 minuts for the lunch
+function LunchFilter (topic, message) {
+  const incLunchMessage = message.time
+  let nextHalfHour = null
+  // If a lunch break is registered at a whole hour, send message to book next thirty minutes.
+  if (incLunchMessage.includes('00')) {
+    nextHalfHour = incLunchMessage.replace(':00', ':30')
+    message.time = nextHalfHour
+  } else {
+    // If a lunch break is registered at the middle of the hour, make copy of message to be the next thirty minutes for booking.
+    let wholeHour
+    // Converting message to book next whole hour after the previous half hour.
+    wholeHour = incLunchMessage.substring(0, 2)
+    wholeHour = parseInt(wholeHour)
+    wholeHour = wholeHour + 1
+    wholeHour = wholeHour.toString()
+    wholeHour = wholeHour.concat(':00')
+    message.time = wholeHour
+  }
+  return message
+}
+
 async function LunchControl (topic, message) {
   try {
     const checkDentist = message.dentistid
     const checkDate = message.date
-    // const originalMessage = message
     const messageCopy = message
     const newTime = messageCopy.time
     let finalTime = null
@@ -134,11 +136,11 @@ async function LunchControl (topic, message) {
     }
 
     // Find booking with date, time and dentist as identifier
-    const search = await Booking.findOne({ date: checkDate, time: finalTime, dentistid: checkDentist })
-    if (search === null) {
-      console.log('Availabe')
+    const bookingSearch = await Booking.findOne({ date: checkDate, time: finalTime, dentistid: checkDentist })
+    if (bookingSearch === null) {
+      console.log('Available')
     } else {
-      console.log('Not Available')
+      console.log('Not available')
       return null
     }
   } catch (e) {
