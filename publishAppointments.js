@@ -61,9 +61,9 @@ function checkHours (topic, payload, weekday) {
     const inputDate = payload.date
     const allAppointments = await Booking.find({ date: inputDate, dentistOfficeId: inputDentistOfficeId })
 
-    let idArray = []
-    let timeArray = []
-    for ( let i = 0; i < allAppointments.length; i++){
+    const idArray = []
+    const timeArray = []
+    for (let i = 0; i < allAppointments.length; i++) {
       idArray.push(allAppointments[i].dentistid)
       timeArray.push(allAppointments[i].time)
     }
