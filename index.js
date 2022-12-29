@@ -5,7 +5,7 @@ const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const mongoose = require('mongoose')
-const dentistOffices = require('../booking-management/models/dentistOffice')
+// const dentistOffices = require('../booking-management/models/dentistOffice')
 const connectUrl = `mqtts://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
   clientId,
