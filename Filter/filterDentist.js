@@ -89,9 +89,9 @@ function availabilityFilter (topic, message) {
       const checkTime = message.time
       const checkDentist = message.dentistid
       // Find booking with date, time and dentist as identifier
-      const lunchCheck = LunchControl(topic, message)
+      const lunchCheck = await LunchControl(topic, message)
       console.log(lunchCheck)
-      if (lunchCheck == null) {
+      if (lunchCheck === null) {
         return null
       } else {
         Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist }, function (_err, checkDate, checkTime, checkDentist) {
@@ -119,21 +119,19 @@ async function LunchControl (topic, message) {
   try {
     const checkDentist = message.dentistid
     const checkDate = message.date
-    const originalMessage = message
+    // const originalMessage = message
     const messageCopy = message
     const newTime = messageCopy.time
     const finalTime = newTime.replace(':00', ':30')
 
     // Find booking with date, time and dentist as identifier
-    Booking.findOne({ date: checkDate, time: finalTime, dentistid: checkDentist }, function (_err, checkDate, nextHalf, checkDentist) {
-      if (checkDate == null && nextHalf == null && checkDentist == null) {
-        console.log('Available')
-        return originalMessage
-      } else {
-        console.log('Not available')
-        return null
-      }
-    })
+    const search = await Booking.findOne({ date: checkDate, time: finalTime, dentistid: checkDentist })
+    if (search === null) {
+      console.log('Availabe')
+    } else {
+      console.log('Not Available')
+      return null
+    }
   } catch (e) {
     console.log(e.message)
   }
