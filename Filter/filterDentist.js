@@ -1,10 +1,6 @@
 module.exports = { filterTopic }
-// const mongoose = require('mongoose')
-// const dentistOffices = require('../booking-management/models/dentistOffice')
-// const Breaks = require('../models/dentistBreaks')
 const Booking = require('../models/booking')
 const publisher = require('../publisher')
-// const dentistBreaks = require('../models/dentistBreaks')
 
 // Send to another filter
 function filterTopic (topic, message) {
@@ -122,7 +118,20 @@ async function LunchControl (topic, message) {
     // const originalMessage = message
     const messageCopy = message
     const newTime = messageCopy.time
-    const finalTime = newTime.replace(':00', ':30')
+    let finalTime = null
+
+    if (newTime.includes('00')) {
+      finalTime = newTime.replace(':00', ':30')
+    } else {
+      finalTime = newTime.replace(':30', ':00')
+      let wholeHour
+      wholeHour = newTime.substring(0, 2)
+      wholeHour = parseInt(wholeHour)
+      wholeHour = wholeHour + 1
+      wholeHour = wholeHour.toString()
+      wholeHour = wholeHour.concat(':00')
+      finalTime = wholeHour
+    }
 
     // Find booking with date, time and dentist as identifier
     const search = await Booking.findOne({ date: checkDate, time: finalTime, dentistid: checkDentist })
