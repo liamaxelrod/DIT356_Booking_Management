@@ -1,8 +1,6 @@
 module.exports = { testFunction }
-const { objectToString } = require('@vue/shared')
-const Booking = require('../booking-management/models/booking')
-// const dentistOffices = require('../models/dentistOfficeId')
-// const publisher = require('../publisher')
+const Booking = require('./models/booking')
+const publisher = require('../booking-management/publisher')
 
 // This filter will check the availability, similarly to the booking appointment
 function testFunction (topic, message) {
@@ -54,35 +52,35 @@ function checkHours (topic, payload, weekday) {
     checkTo = parseFloat(checkTo)
     const timeSlots = []
     for (let i = checkFrom; i <= checkTo - 1; i++) {
-      for( let j = 0; j < numDentists; j++){
+      for (let j = 0; j < numDentists; j++) {
         timeSlots.push(i + ':00')
         timeSlots.push(i + ':30')
       }
     }
     const inputDentistOfficeId = payload.dentistOfficeId
     const inputDate = payload.date
-    const allAppointments = await Booking.find({ date: inputDate, dentistOfficeId: inputDentistOfficeId }) 
+    const allAppointments = await Booking.find({ date: inputDate, dentistOfficeId: inputDentistOfficeId })
 
-    let count = 0
-    for (let properties in allAppointments) {
-      count = count +1
+    let idArray = []
+    let timeArray = []
+    for ( let i = 0; i < allAppointments.length; i++){
+      idArray.push(allAppointments[i].dentistid)
+      timeArray.push(allAppointments[i].time)
     }
 
     const stringAppointment = JSON.stringify(allAppointments)
     const freeTimeSlots = []
 
-    let dif = numDentists - count
-    console.log(dif)
+    let dif = numDentists - idArray.length
     for (let i = 0; i <= timeSlots.length - 1; i++) {
       if (!stringAppointment.includes(timeSlots[i])) {
         freeTimeSlots.push(timeSlots[i])
       } else if (dif > 0) {
         freeTimeSlots.push(timeSlots[i])
         dif = dif - 1
-      } 
+      }
     }
-    
-    availableTimeSlots(freeTimeSlots)
+    removeDuplicates(freeTimeSlots)
 
     // readInput(array)
     return (checkFrom, checkTo)
@@ -91,9 +89,23 @@ function checkHours (topic, payload, weekday) {
   })
 }
 
-function availableTimeSlots (array) {
-  console.log(array)
+// If there are more than 1 dentist we still wanna publish only ONE available appointment until all dentists are booked,
+// so we filter out duplicates when there are two available dentists for the frontend
+function removeDuplicates (arr) {
+  const unique = []
+  arr.forEach(element => {
+    if (!unique.includes(element)) {
+      unique.push(element)
+    }
+  })
+  availableTimeSlots(unique)
 }
+
+// Finished array ready to be sent to the frontend
+function availableTimeSlots (array) {
+  publisher.publishAvailableAppointments(array)
+}
+
 // Temp array copy of the dentist offices
 const dentists = [
   {

@@ -44,7 +44,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 subscriber.subscribeTopic()
 
 // Add dentist office registry
-dentistOffices.addToDentistDb()
+// dentistOffices.addToDentistDb()
 
 // Handle errors
 client.on('error', function (error) {

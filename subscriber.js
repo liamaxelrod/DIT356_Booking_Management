@@ -6,6 +6,7 @@ const pipeBooking = require('../booking-management/Filter/filterBooking')
 const pipeDentist = require('../booking-management/Filter/filterDentist')
 const pipeOffice = require('../booking-management/Filter/filterOffice')
 const timeAppointments = require('../booking-management/publishAppointments')
+const addNewDentist = require('../booking-management/addDentist')
 
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -34,6 +35,7 @@ function subscribeTopic () {
   const officeTopic = 'dentistimo/dentist-office/fetch-all'
   const officeTopic2 = 'dentistimo/dentist-office/fetch-one'
   const officeAvailability = 'dentistimo/dentist-office/fetch-availability'
+  const addDentist = 'dentistimo/add-dentist'
 
   client.on('connect', () => {
     console.log('Connected')
@@ -64,6 +66,9 @@ function subscribeTopic () {
     client.subscribe([topic5], () => {
       console.log(`Subscribe to topic '${topic5}'`)
     })
+    client.subscribe([addDentist], () => {
+      console.log(`Subscribe to topic '${addDentist}'`)
+    })
   })
 }
 
@@ -72,7 +77,6 @@ client.on('message', (topic, payload) => {
   if (topic === 'dentistimo/dentist-office/fetch-availability') {
     pipeOffice.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/create-booking') {
-    console.log(JSON.stringify(payload))
     pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/delete-booking') {
     pipeBooking.filterTopic(topic, payload)
@@ -93,6 +97,9 @@ client.on('message', (topic, payload) => {
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments-day') {
     // console.log(message)
     pipeDentist.filterTopic(topic, payload)
+  } else if (topic === 'dentistimo/add-dentist') {
+    // console.log(message)
+    addNewDentist.addDentist(topic, payload)
   } else {
     console.log('Not a correct topic')
   }

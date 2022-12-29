@@ -26,15 +26,33 @@ function availabilityFilter (topic, message) {
     try {
       const checkDate = message.date
       const checkTime = message.time
-      const checkDentist = message.dentistid
+      const checkDentist = await Booking.find({ date: checkDate, time: checkTime })
+      if (!checkDentist) {
+        console.log('error')
+      }
+      const checkDentistId = message.dentistOfficeId
+      const listOfDentists = await Office.find({ id: checkDentistId })
+      let idArray = []
+      for (let i = 0; i < listOfDentists.length; i++) {
+        idArray = (listOfDentists[i].listDentists)
+      }
+      const testArray = []
+      for (let i = 0; i < checkDentist.length; i++) {
+        testArray.push(checkDentist[i].dentistid)
+      }
+      const freeDentist = (compareArrays(idArray, testArray))
+
+      const test = Math.floor(Math.random() * (freeDentist.length))
+
+      const checkId = freeDentist[test]
+
       // Find booking with date, time and dentist as identifier
-      Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist }, function (_err, checkDate, checkTime, checkDentist) {
-        if (checkDate == null && checkTime == null && checkDentist == null) {
-          filterMakeAppointment(topic, message)
+      Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkId }, async function (_err, checkDate, checkTime, checkID) {
+        message.dentistid = checkId
+        if (checkId) {
+          await filterMakeAppointment(topic, message)
         } else {
-          console.log('It is not available')
-          message = null
-          publisher.publishBookingDate(topic, message)
+          console.log('Fan felix')
         }
       })
     } catch (e) {
@@ -135,4 +153,25 @@ async function getOneOffice (message) {
   } catch (e) {
     console.log(e.message)
   }
+}
+
+function compareArrays (arr1, arr2) {
+  // Create a Set from each array to remove duplicates
+  const set1 = new Set(arr1)
+  const set2 = new Set(arr2)
+
+  // Create a Set of the elements that are in one Set but not the other
+  const difference = new Set(
+    [...set1].filter(x => !set2.has(x))
+  )
+
+  // Add elements from the second Set that are not in the first Set
+  for (const element of set2) {
+    if (!set1.has(element)) {
+      difference.add(element)
+    }
+  }
+
+  // Return an array of the elements in the difference Set
+  return [...difference]
 }
