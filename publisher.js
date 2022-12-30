@@ -1,4 +1,4 @@
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments }
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -61,12 +61,12 @@ function publishBookingDate (topic, message) {
 // This method will publish breaks to the frontend and topic will differ depending on break or lunch in the 'breakType' attribute
 function publishBreakFika (topic, message) {
   let breakTopic = ''
-  if (message.breakType === 'break') {
-    breakTopic = 'dentistimo/dentist/break-booked'
-  } else if (message.breakType === 'lunch') {
+  if (message.appointmentType === 'fika') {
+    breakTopic = 'dentistimo/dentist/fika-booked'
+  } else if (message.appointmentType === 'lunch') {
     breakTopic = 'dentistimo/dentist/lunch-booked'
   }
-  const pubMessage = ({ dentistid: message.dentistid, breakType: message.breakType, date: message.date, time: message.time })
+  const pubMessage = ({ dentistid: message.dentistid, appointmentType: message.appointmentType, date: message.date, time: message.time })
   console.log(breakTopic)
   client.publish(breakTopic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -134,6 +134,16 @@ function publishAllUserAppointmentsDay (message) {
 function publishAllUserAppointments (message) {
   const foundAppointments = 'dentistimo/user-appointment/all-appointments'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+// Post deleted bookings
+function publishDeletedBreak (topic) {
+  const pubMessage = 'The break has succesfully been removed'
+  client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

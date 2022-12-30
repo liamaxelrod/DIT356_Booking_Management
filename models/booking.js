@@ -7,7 +7,8 @@ const bookingSchema = new Schema({
   dentistid: { type: Number },
   issuance: { type: Number },
   date: { type: String },
-  time: { type: String }
+  time: { type: String },
+  appointmentType: { type: String }
 })
 
 module.exports = mongoose.model('booking', bookingSchema)
