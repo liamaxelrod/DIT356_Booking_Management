@@ -17,6 +17,8 @@ function filterTopic (topic, message) {
     OfficeFilter(message)
   } else if (topic === 'dentistimo/user-appointment/get-all-appointments-day') {
     getAppointmentsUserDay(message)
+  } else if (topic === 'dentistimo/user-appointment/get-all-appointments') {
+    getAppointmentsUser(message)
   } else {
     console.log('Unable to read topic 1')
   }
@@ -59,6 +61,10 @@ function filterMakeAppointment (topic, message) {
     if (userIdInput != null) {
       keyCount = Object.keys(userIdInput).length
       if (keyCount < 2) {
+        // Issuance generator
+        let issuance = Math.random() * 10000000
+        issuance = Math.round(issuance)
+        message.issuance = issuance
         saveAppointment(topic, message)
       } else {
         console.log('Too many bookings')
@@ -149,6 +155,25 @@ async function getAppointmentsUserDay (message) {
         publisher.publishAllUserAppointmentsDay(AppointmentsDay)
       } else {
         console.log('Could not find any appointments that day')
+      }
+    }
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+// Get all appointments for a user
+async function getAppointmentsUser (message) {
+  try {
+    if (message.userid != null) {
+    // Find bookings with userid as identifier
+      const filter = { userid: message.userid }
+      const getAppointments = await Booking.find(filter)
+      // Checks that the query response is not empty
+      if (getAppointments.length) {
+        publisher.publishAllUserAppointments(getAppointments)
+      } else {
+        console.log('Could not find any appointments')
       }
     }
   } catch (e) {
