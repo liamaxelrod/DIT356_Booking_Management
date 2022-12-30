@@ -61,12 +61,12 @@ function publishBookingDate (topic, message) {
 // This method will publish breaks to the frontend and topic will differ depending on break or lunch in the 'breakType' attribute
 function publishBreakFika (topic, message) {
   let breakTopic = ''
-  if (message.breakType === 'break') {
-    breakTopic = 'dentistimo/dentist/break-booked'
-  } else if (message.breakType === 'lunch') {
+  if (message.appointmentType === 'fika') {
+    breakTopic = 'dentistimo/dentist/fika-booked'
+  } else if (message.appointmentType === 'lunch') {
     breakTopic = 'dentistimo/dentist/lunch-booked'
   }
-  const pubMessage = ({ dentistid: message.dentistid, breakType: message.breakType, date: message.date, time: message.time })
+  const pubMessage = ({ dentistid: message.dentistid, appointmentType: message.appointmentType, date: message.date, time: message.time })
   console.log(breakTopic)
   client.publish(breakTopic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
     if (error) {
