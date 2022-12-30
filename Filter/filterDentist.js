@@ -157,20 +157,20 @@ async function LunchControl (topic, message) {
 function deleteFilter (message) {
   console.log(message.dentistid)
   if (message.dentistid != null) {
-    deleteBooking(message)
+    deleteBreak(message)
   } else {
     console.log('Message does not include dentistid')
   }
 }
 
-async function deleteBooking (message) {
+async function deleteBreak (message) {
   try {
     // Delete booking with issuance as identifier
     const findBooking = await Booking.findOne({ dentistid: message.dentistid, date: message.date, time: message.time })
     if (findBooking != null) {
       await Booking.deleteOne({ dentistid: message.dentistid, date: message.date, time: message.time })
-      const deletedBookingTopic = 'dentistimo/booking/deleted-break'
-      publisher.publishDeletedBreak(deletedBookingTopic)
+      const deletedBreakTopic = 'dentistimo/booking/deleted-break'
+      publisher.publishDeletedBreak(deletedBreakTopic)
     } else {
       console.log('Could not find a registered break')
     }
