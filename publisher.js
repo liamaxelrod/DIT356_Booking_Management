@@ -1,4 +1,4 @@
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments }
+module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
 const port = '8883'
@@ -134,6 +134,16 @@ function publishAllUserAppointmentsDay (message) {
 function publishAllUserAppointments (message) {
   const foundAppointments = 'dentistimo/user-appointment/all-appointments'
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+// Post deleted bookings
+function publishDeletedBreak (topic) {
+  const pubMessage = 'The break has succesfully been removed'
+  client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

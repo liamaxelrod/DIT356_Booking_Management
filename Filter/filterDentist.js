@@ -13,6 +13,8 @@ function filterTopic (topic, message) {
     getAppointmentsDentist(message)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments-day') {
     getAppointmentsDentistDay(message)
+  } else if (topic === 'dentistimo/booking/delete-break') {
+    deleteFilter(message)
   } else {
     console.log('Unable to read topic')
   }
@@ -145,6 +147,32 @@ async function LunchControl (topic, message) {
     } else {
       console.log('Not available')
       return null
+    }
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+// Delete booking filter
+function deleteFilter (message) {
+  console.log(message.dentistid)
+  if (message.dentistid != null) {
+    deleteBooking(message)
+  } else {
+    console.log('Message does not include dentistid')
+  }
+}
+
+async function deleteBooking (message) {
+  try {
+    // Delete booking with issuance as identifier
+    const findBooking = await Booking.findOne({ dentistid: message.dentistid, date: message.date, time: message.time })
+    if (findBooking != null) {
+      await Booking.deleteOne({ dentistid: message.dentistid, date: message.date, time: message.time })
+      const deletedBookingTopic = 'dentistimo/booking/deleted-break'
+      publisher.publishDeletedBreak(deletedBookingTopic)
+    } else {
+      console.log('Could not find a registered break')
     }
   } catch (e) {
     console.log(e.message)
