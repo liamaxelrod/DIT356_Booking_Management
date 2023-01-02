@@ -65,6 +65,7 @@ function filterMakeAppointment (topic, message) {
         let issuance = Math.random() * 10000000
         issuance = Math.round(issuance)
         message.issuance = issuance
+        message.appointmentType = 'appointment'
         saveAppointment(topic, message)
       } else {
         console.log('Too many bookings')
