@@ -18,10 +18,10 @@ dentistimo/appointment/free
 Make an appointment 
 dentistimo/booking/create-booking
 {
-   "userid": 5, 
+   "userid": 3, 
    "requestid": 50981,
    "issuance": 10009099191,
    "dentistOfficeId": 1,
-   "date": "2022-12-22",
+   "date": "2023-01-04",
    "time": "14:00"
 }

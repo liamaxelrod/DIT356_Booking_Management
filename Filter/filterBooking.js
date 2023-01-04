@@ -1,7 +1,7 @@
 
 const Booking = require('../models/booking')
 const publisher = require('../publisher')
-module.exports = { filterTopic, deleteFilter, availabilityFilter, filterMakeAppointment, saveAppointment }
+module.exports = { filterTopic, deleteFilter, filterMakeAppointment, saveAppointment }
 const Office = require('../models/dentistOffice')
 
 // Send to another filter
@@ -11,54 +11,12 @@ function filterTopic (topic, message) {
     OfficeFilter(message)
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
     OfficeFilter(message)
+  } else if (topic === 'dentistimo/user-appointment/get-all-appointments-day') {
+    getAppointmentsUserDay(message)
+  } else if (topic === 'dentistimo/user-appointment/get-all-appointments') {
+    getAppointmentsUser(message)
   } else {
     console.log('Unable to read topic 1')
-  }
-}
-
-// Check date, time and dentist is available in databse
-function availabilityFilter (topic, message) {
-  async function checkAvailability (topic, message) {
-    try {
-      const checkDate = message.date
-      const checkTime = message.time
-      const checkDentist = await Booking.find({ date: checkDate, time: checkTime })
-      if (!checkDentist) {
-        console.log('error')
-      }
-      const checkDentistId = message.dentistOfficeId
-      const listOfDentists = await Office.find({ id: checkDentistId })
-      let idArray = []
-      for (let i = 0; i < listOfDentists.length; i++) {
-        idArray = (listOfDentists[i].listDentists)
-      }
-      const testArray = []
-      for (let i = 0; i < checkDentist.length; i++) {
-        testArray.push(checkDentist[i].dentistid)
-      }
-      const freeDentist = (compareArrays(idArray, testArray))
-
-      const test = Math.floor(Math.random() * (freeDentist.length))
-
-      const checkId = freeDentist[test]
-
-      // Find booking with date, time and dentist as identifier
-      Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkId }, async function (_err, checkDate, checkTime, checkID) {
-        message.dentistid = checkId
-        if (checkId) {
-          await filterMakeAppointment(topic, message)
-        } else {
-          console.log('Fan felix')
-        }
-      })
-    } catch (e) {
-      console.log(e.message)
-    }
-  }
-  if (message.date === '' || null) {
-    console.log('No date')
-  } else {
-    checkAvailability(topic, message)
   }
 }
 
@@ -71,6 +29,11 @@ function filterMakeAppointment (topic, message) {
     if (userIdInput != null) {
       keyCount = Object.keys(userIdInput).length
       if (keyCount < 2) {
+        // Issuance generator
+        let issuance = Math.random() * 10000000
+        issuance = Math.round(issuance)
+        message.issuance = issuance
+        message.appointmentType = 'appointment'
         saveAppointment(topic, message)
       } else {
         console.log('Too many bookings')
@@ -151,23 +114,38 @@ async function getOneOffice (message) {
   }
 }
 
-function compareArrays (arr1, arr2) {
-  // Create a Set from each array to remove duplicates
-  const set1 = new Set(arr1)
-  const set2 = new Set(arr2)
-
-  // Create a Set of the elements that are in one Set but not the other
-  const difference = new Set(
-    [...set1].filter(x => !set2.has(x))
-  )
-
-  // Add elements from the second Set that are not in the first Set
-  for (const element of set2) {
-    if (!set1.has(element)) {
-      difference.add(element)
+// Get all appointments for a user a certain day
+async function getAppointmentsUserDay (message) {
+  try {
+    if (message.userid != null && message.date != null) {
+      const AppointmentsDay = await Booking.find({ userid: message.userid, date: message.date })
+      // Checks that the query response is not empty
+      if (AppointmentsDay.length) {
+        publisher.publishAllUserAppointmentsDay(AppointmentsDay)
+      } else {
+        console.log('Could not find any appointments that day')
+      }
     }
+  } catch (e) {
+    console.log(e.message)
   }
+}
 
-  // Return an array of the elements in the difference Set
-  return [...difference]
+// Get all appointments for a user
+async function getAppointmentsUser (message) {
+  try {
+    if (message.userid != null) {
+    // Find bookings with userid as identifier
+      const filter = { userid: message.userid }
+      const getAppointments = await Booking.find(filter)
+      // Checks that the query response is not empty
+      if (getAppointments.length) {
+        publisher.publishAllUserAppointments(getAppointments)
+      } else {
+        console.log('Could not find any appointments')
+      }
+    }
+  } catch (e) {
+    console.log(e.message)
+  }
 }

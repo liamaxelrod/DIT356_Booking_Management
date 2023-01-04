@@ -31,6 +31,9 @@ function subscribeTopic () {
   const topic3 = 'dentistimo/dentist/breaks'
   const topic4 = 'dentistimo/dentist-appointment/get-all-appointments'
   const topic5 = 'dentistimo/dentist-appointment/get-all-appointments-day'
+  const topic6 = 'dentistimo/user-appointment/get-all-appointments-day'
+  const topic7 = 'dentistimo/user-appointment/get-all-appointments'
+  const topic8 = 'dentistimo/booking/delete-break'
 
   // Dentist Office topics:
   const officeTopic = 'dentistimo/dentist-office/fetch-all'
@@ -70,6 +73,15 @@ function subscribeTopic () {
     client.subscribe([addDentist], () => {
       console.log(`Subscribe to topic '${addDentist}'`)
     })
+    client.subscribe([topic6], () => {
+      console.log(`Subscribe to topic '${topic6}'`)
+    })
+    client.subscribe([topic7], () => {
+      console.log(`Subscribe to topic '${topic7}'`)
+    })
+    client.subscribe([topic8], () => {
+      console.log(`Subscribe to topic '${topic8}'`)
+    })
   })
 }
 
@@ -83,20 +95,21 @@ client.on('message', (topic, payload) => {
     pipeAppointment.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist/breaks') {
     pipeDentist.filterTopic(topic, payload)
-    // console.log(message)
   } else if (topic === 'dentistimo/dentist-office/fetch-all') {
-    // console.log(message)
     pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
-    // console.log(message)
     pipeBooking.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/appointment/free') {
     timeAppointments.testFunction(topic, payload)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments') {
-    // console.log(message)
     pipeDentist.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments-day') {
-    // console.log(message)
+    pipeDentist.filterTopic(topic, payload)
+  } else if (topic === 'dentistimo/user-appointment/get-all-appointments-day') {
+    pipeBooking.filterTopic(topic, payload)
+  } else if (topic === 'dentistimo/user-appointment/get-all-appointments') {
+    pipeBooking.filterTopic(topic, payload)
+  } else if (topic === 'dentistimo/booking/delete-break') {
     pipeDentist.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/add-dentist') {
     // console.log(message)
