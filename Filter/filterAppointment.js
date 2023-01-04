@@ -7,7 +7,11 @@ const Office = require('../models/dentistOffice')
 // Send to another filter
 function filterTopic (topic, message) {
   message = JSON.parse(message)
-  if (topic === 'dentistimo/dentist-office/fetch-all') {
+  if (topic === 'dentistimo/booking/create-booking') {
+    availabilityFilter(topic, message)
+  } else if (topic === 'dentistimo/booking/delete-booking') {
+    deleteFilter(message)
+  } else if (topic === 'dentistimo/dentist-office/fetch-all') {
     OfficeFilter(message)
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
     OfficeFilter(message)
@@ -48,7 +52,7 @@ function availabilityFilter (topic, message) {
         if (checkId) {
           await filterMakeAppointment(topic, message)
         } else {
-          console.log('Fan felix')
+          console.log('Error, invalid')
         }
       })
     } catch (e) {

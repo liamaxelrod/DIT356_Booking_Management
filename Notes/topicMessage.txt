@@ -20,7 +20,6 @@ dentistimo/booking/create-booking
 {
    "userid": 5, 
    "requestid": 50981,
-   "dentistid": 687381763,
    "issuance": 10009099191,
    "dentistOfficeId": 1,
    "date": "2022-12-22",

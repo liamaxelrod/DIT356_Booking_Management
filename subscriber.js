@@ -3,6 +3,7 @@ module.exports = { subscribeTopic }
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const pipeBooking = require('../booking-management/Filter/filterBooking')
+const pipeAppointment = require('../booking-management/Filter/filterAppointment')
 const pipeDentist = require('../booking-management/Filter/filterDentist')
 const pipeOffice = require('../booking-management/Filter/filterOffice')
 const timeAppointments = require('../booking-management/publishAppointments')
@@ -77,9 +78,9 @@ client.on('message', (topic, payload) => {
   if (topic === 'dentistimo/dentist-office/fetch-availability') {
     pipeOffice.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/create-booking') {
-    pipeBooking.filterTopic(topic, payload)
+    pipeAppointment.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/delete-booking') {
-    pipeBooking.filterTopic(topic, payload)
+    pipeAppointment.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/dentist/breaks') {
     pipeDentist.filterTopic(topic, payload)
     // console.log(message)
