@@ -8,17 +8,22 @@ const pipeDentist = require('../booking-management/Filter/filterDentist')
 const pipeOffice = require('../booking-management/Filter/filterOffice')
 const timeAppointments = require('../booking-management/publishAppointments')
 const addNewDentist = require('../booking-management/addDentist')
+const CircuitBreaker = require('opossum')
+let myFuncCalls = 0
 
-const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
-const port = '8883'
+// const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
+// const port = '8883'
 
-const connectUrl = `mqtts://${host}:${port}`
+const host = 'broker.emqx.io'
+const port = '1883'
+
+const connectUrl = `mqtt://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: 'group6_dentistimo',
-  password: 'dentistimo123!',
+  // username: 'group6_dentistimo',
+  // password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
 
@@ -115,21 +120,61 @@ function subscribeTopic () {
   })
 }
 
+// Send to another filter
+function loadChecker (topic, message) {
+  return new Promise((resolve, reject) => {
+    myFuncCalls++
+    console.log(myFuncCalls)
+    if (myFuncCalls < 10) {
+      tokenHandler(topic, message)
+      resolve()
+    } else {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject()
+      loadTimer()
+    }
+    console.log('load testing')
+  })
+}
+
+// Functions for putting a timer on the load balancing and making it 0 after a given time.
+function loadTimer () {
+  setTimeout(makeZero, 7000)
+}
+function makeZero () {
+  myFuncCalls = 0
+}
+
 // Filtering the different topics
 client.on('message', async (topic, payload) => {
   if (topic !== responseTopic && topic !== 'dentistimo/add-dentist') {
     try {
-      const userID = await verifyIdToken(payload, client)
-      payload = JSON.parse(payload)
-      if (userID.role === 'Dentist') {
-        payload.dentistid = userID.id
-        // If the JWT is valid, execute the rest of the logic
-        handleRequest(topic, payload)
-      } else {
-        payload.userid = userID.id
-        // If the JWT is valid, execute the rest of the logic
-        handleRequest(topic, payload)
+      // Circuit breaker for the booking functionality
+      let state
+      const circuitBreaker = new CircuitBreaker(loadChecker, options)
+
+      circuitBreaker.fallback(() => 'Sorry, out of service right now')
+      circuitBreaker.on('open', () => {
+        if (state !== 'opened') {
+          console.log('Circuitbreaker opened')
+          state = 'opened'
+        }
+      })
+      circuitBreaker.on('halfOpen', () => {
+        if (state !== 'halfOpen') {
+          console.log('Circuitbreaker halfOpen')
+          state = 'halfOpen'
+        }
+      })
+      circuitBreaker.on('success', () => {
+        if (state !== 'closed') {
+          circuitBreaker.close()
+          console.log('Circuitbreaker closed')
+          state = 'closed'
+        }
       }
+      )
+      circuitBreaker.fire(topic, payload)
     } catch (error) {
       console.log(error.message)
     }
@@ -137,6 +182,20 @@ client.on('message', async (topic, payload) => {
     handleRequest(topic, payload)
   }
 })
+
+async function tokenHandler (topic, payload) {
+  const userID = await verifyIdToken(payload, client)
+  payload = JSON.parse(payload)
+  if (userID.role === 'Dentist') {
+    payload.dentistid = userID.id
+    // If the JWT is valid, execute the rest of the logic
+    handleRequest(topic, payload)
+  } else {
+    payload.userid = userID.id
+    // If the JWT is valid, execute the rest of the logic
+    handleRequest(topic, payload)
+  }
+}
 
 // Filtering the different topics
 async function handleRequest (topic, payload) {
@@ -171,4 +230,11 @@ async function handleRequest (topic, payload) {
   } else {
     console.log('Not a correct topic')
   }
+}
+
+// Circuit breaker control options
+const options = {
+  timeout: 3000, // If our function takes longer than 3 seconds, trigger a failure
+  errorThresholdPercentage: 25, // When 25% of requests fail, trip the circuit
+  resetTimeout: 15000 // After 15 seconds, try again.
 }

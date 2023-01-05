@@ -2,18 +2,21 @@
 module.exports = { publishTopic, publishAvailableAppointments, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
 
 const mqtt = require('mqtt')
-const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
-const port = '8883'
+// const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
+// const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 // const dentistOffices = require('../booking-management/models/dentistOffice')
 
-const connectUrl = `mqtts://${host}:${port}`
+const host = 'broker.emqx.io'
+const port = '1883'
+
+const connectUrl = `mqtt://${host}:${port}`
 const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  username: 'group6_dentistimo',
-  password: 'dentistimo123!',
+  // username: 'group6_dentistimo',
+  // password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
 
