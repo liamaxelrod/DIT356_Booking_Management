@@ -13,7 +13,6 @@ function filterTopic (topic, message) {
 
 // This filter will check the availability, similarly to the booking appointment
 function checkAvailabilityFilter (topic, message) {
-  message = JSON.parse(message)
   const d = new Date(message.date)
   const day = d.getDay()
 

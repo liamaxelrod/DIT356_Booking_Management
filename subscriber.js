@@ -21,6 +21,33 @@ const client = mqtt.connect(connectUrl, {
   password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
+
+const requestTopic = 'dentistimo/authentication'
+const responseTopic = 'dentistimo/authentication/response'
+
+async function verifyIdToken (payload, client) {
+  // Extract the idToken from the payload
+  const { idToken } = JSON.parse(payload)
+
+  // Send a request to verify the idToken
+  client.publish(requestTopic, JSON.stringify({ idToken }))
+
+  // Wait for the response
+  const response = await new Promise((resolve, reject) => {
+    client.on('message', (topic, message) => {
+      if (topic === responseTopic) {
+        resolve(JSON.parse(message))
+      }
+    })
+  })
+  // Check the status of the response
+  if (response.status === 'Unauthorized') {
+    throw new Error('Unauthorized')
+  } else if (response.status === 'Authorized') {
+    return response
+  }
+}
+
 function subscribeTopic () {
   // User booking appointments
   const topic1 = 'dentistimo/booking/create-booking'
@@ -82,11 +109,37 @@ function subscribeTopic () {
     client.subscribe([topic8], () => {
       console.log(`Subscribe to topic '${topic8}'`)
     })
+    client.subscribe([responseTopic], () => {
+      console.log(`Subscribe to topic '${responseTopic}'`)
+    })
   })
 }
 
 // Filtering the different topics
-client.on('message', (topic, payload) => {
+client.on('message', async (topic, payload) => {
+  if (topic !== responseTopic && topic !== 'dentistimo/add-dentist') {
+    try {
+      const userID = await verifyIdToken(payload, client)
+      payload = JSON.parse(payload)
+      if (userID.role === 'Dentist') {
+        payload.dentistid = userID.id
+        // If the JWT is valid, execute the rest of the logic
+        handleRequest(topic, payload)
+      } else {
+        payload.userid = userID.id
+        // If the JWT is valid, execute the rest of the logic
+        handleRequest(topic, payload)
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
+  } else {
+    handleRequest(topic, payload)
+  }
+})
+
+// Filtering the different topics
+async function handleRequest (topic, payload) {
   if (topic === 'dentistimo/dentist-office/fetch-availability') {
     pipeOffice.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/booking/create-booking') {
@@ -112,9 +165,10 @@ client.on('message', (topic, payload) => {
   } else if (topic === 'dentistimo/booking/delete-break') {
     pipeDentist.filterTopic(topic, payload)
   } else if (topic === 'dentistimo/add-dentist') {
-    // console.log(message)
     addNewDentist.addDentist(topic, payload)
+  } else if (topic === 'dentistimo/authentication/response') {
+    console.log()
   } else {
     console.log('Not a correct topic')
   }
-})
+}

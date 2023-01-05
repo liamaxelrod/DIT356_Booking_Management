@@ -4,7 +4,6 @@ const publisher = require('../publisher')
 
 // Send to another filter
 function filterTopic (topic, message) {
-  message = JSON.parse(message)
   if (topic === 'dentistimo/dentist/breaks') {
     availabilityFilter(topic, message)
   } else if (topic === 'dentistimo/booking/lunch') {

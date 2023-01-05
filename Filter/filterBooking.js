@@ -1,12 +1,10 @@
-
 const Booking = require('../models/booking')
 const publisher = require('../publisher')
-module.exports = { filterTopic, deleteFilter, filterMakeAppointment, saveAppointment }
+module.exports = { filterTopic, deleteFilter, saveAppointment }
 const Office = require('../models/dentistOffice')
 
 // Send to another filter
 function filterTopic (topic, message) {
-  message = JSON.parse(message)
   if (topic === 'dentistimo/dentist-office/fetch-all') {
     OfficeFilter(message)
   } else if (topic === 'dentistimo/dentist-office/fetch-one') {
@@ -18,30 +16,6 @@ function filterTopic (topic, message) {
   } else {
     console.log('Unable to read topic 1')
   }
-}
-
-// Filter the amount of times the user has booked an appointment. It may not exceed 2 appointments
-function filterMakeAppointment (topic, message) {
-  const userIdInput = message.userid
-  let keyCount = 0
-  // Looking in the database for the userId, to count how many appointments this user has made
-  Booking.find({ userid: userIdInput }, function (_err, userIdInput) {
-    if (userIdInput != null) {
-      keyCount = Object.keys(userIdInput).length
-      if (keyCount < 2) {
-        // Issuance generator
-        let issuance = Math.random() * 10000000
-        issuance = Math.round(issuance)
-        message.issuance = issuance
-        message.appointmentType = 'appointment'
-        saveAppointment(topic, message)
-      } else {
-        console.log('Too many bookings')
-      }
-    } else {
-      console.log('It is not available')
-    }
-  })
 }
 
 // This function will save the appointment in the database

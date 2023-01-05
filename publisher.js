@@ -1,5 +1,5 @@
 
-module.exports = { publishTopic, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
+module.exports = { publishTopic, publishAvailableAppointments, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
 
 const mqtt = require('mqtt')
 const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
@@ -42,14 +42,10 @@ function publishDeletedBooking (topic) {
 
 // Publish message when a successfull booking has been made
 function publishBookingDate (topic, message) {
-  topic = 'dentistimo/booking/succesful-booking'
+  topic = `${'dentistimo/booking/succesful-booking'}/${message.idToken}`
   let pubMessage
   if (message !== null) {
-    const pubUserId = message.userid
-    const pubRequestId = message.requestid
-    const pubDate = message.date
-    const pubTime = message.time
-    pubMessage = ({ userId: pubUserId, requestId: pubRequestId, date: pubDate, time: pubTime })
+    pubMessage = ('Successful booking' + '\nDate: ' + message.date + '\nTime: ' + message.time)
   } else {
     pubMessage = 'Booking unavailable'
   }
@@ -64,11 +60,11 @@ function publishBookingDate (topic, message) {
 function publishBreakFika (topic, message) {
   let breakTopic = ''
   if (message.appointmentType === 'fika') {
-    breakTopic = 'dentistimo/dentist/fika-booked'
+    breakTopic = `${'dentistimo/dentist/fika-booked'}/${message.idToken}`
   } else if (message.appointmentType === 'lunch') {
-    breakTopic = 'dentistimo/dentist/lunch-booked'
+    breakTopic = `${'dentistimo/dentist/lunch-booked'}/${message.idToken}`
   }
-  const pubMessage = ({ dentistid: message.dentistid, appointmentType: message.appointmentType, date: message.date, time: message.time })
+  const pubMessage = ('Successful break registered: ' + { dentistid: message.dentistid, appointmentType: message.appointmentType, date: message.date, time: message.time })
   console.log(breakTopic)
   client.publish(breakTopic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -76,6 +72,7 @@ function publishBreakFika (topic, message) {
     }
   })
 }
+
 // Publish all available dentist offices
 function publishAllOffices (message) {
   const dentistTopic = 'dentistimo/dentist-office/get-all'
@@ -147,6 +144,15 @@ function publishAllUserAppointments (message) {
 function publishDeletedBreak (topic) {
   const pubMessage = 'The break has succesfully been removed'
   client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+function publishAvailableAppointments (message) {
+  const foundAppointments = 'dentistimo/dentist/free-appointments'
+  client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

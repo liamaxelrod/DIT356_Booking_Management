@@ -29,7 +29,6 @@ const dentists = [
     name: 'Your Dentist',
     owner: 'Dan Tist',
     dentists: 3,
-    listDentists: [11, 10, 22],
     address: 'Spannmålsgatan 20',
     city: 'Gothenburg',
     coordinate: {

@@ -4,7 +4,6 @@ const publisher = require('../booking-management/publisher')
 
 // This filter will check the availability, similarly to the booking appointment
 function testFunction (topic, message) {
-  message = JSON.parse(message)
   const d = new Date(message.date)
   const day = d.getDay()
   // If weekday: continue. If weekend: Terminate, hashmap the days into matching day

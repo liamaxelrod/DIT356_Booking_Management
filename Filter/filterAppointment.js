@@ -1,4 +1,3 @@
-
 const Booking = require('../models/booking')
 const publisher = require('../publisher')
 module.exports = { filterTopic, deleteFilter, availabilityFilter, filterMakeAppointment, saveAppointment }
@@ -6,15 +5,12 @@ const Office = require('../models/dentistOffice')
 
 // Send to another filter
 function filterTopic (topic, message) {
-  message = JSON.parse(message)
+  console.log('testing')
+  console.log(message)
   if (topic === 'dentistimo/booking/create-booking') {
     availabilityFilter(topic, message)
   } else if (topic === 'dentistimo/booking/delete-booking') {
     deleteFilter(message)
-  } else if (topic === 'dentistimo/dentist-office/fetch-all') {
-    OfficeFilter(message)
-  } else if (topic === 'dentistimo/dentist-office/fetch-one') {
-    OfficeFilter(message)
   } else {
     console.log('Unable to read topic 1')
   }
@@ -75,6 +71,11 @@ function filterMakeAppointment (topic, message) {
     if (userIdInput != null) {
       keyCount = Object.keys(userIdInput).length
       if (keyCount < 2) {
+        // Issuance generator
+        let issuance = Math.random() * 10000000
+        issuance = Math.round(issuance)
+        message.issuance = issuance
+        message.appointmentType = 'appointment'
         saveAppointment(topic, message)
       } else {
         console.log('Too many bookings')
@@ -97,7 +98,6 @@ function saveAppointment (topic, message) {
 
 // Delete booking filter
 function deleteFilter (message) {
-  console.log(message.issuance)
   if (message.issuance != null) {
     deleteBooking(message)
   } else {
@@ -115,40 +115,6 @@ async function deleteBooking (message) {
       publisher.publishDeletedBooking(deletedBookingTopic)
     } else {
       console.log('Could not find booking')
-    }
-  } catch (e) {
-    console.log(e.message)
-  }
-}
-
-function OfficeFilter (message) {
-  if (message.message === 'get_all_offices') {
-    getOffices()
-  } else if (message.id != null) {
-    getOneOffice(message)
-  }
-}
-
-// Function for getting all offices
-async function getOffices () {
-  try {
-    const filter = {}
-    const allOffices = await Office.find(filter)
-    publisher.publishAllOffices(allOffices)
-  } catch (e) {
-    console.log(e.message)
-  }
-}
-
-// Function for getting one office
-async function getOneOffice (message) {
-  try {
-    // Find office with id as identifier
-    const findOffice = await Office.findOne({ id: message.id })
-    if (findOffice != null) {
-      publisher.publishOneOffice(findOffice)
-    } else {
-      publisher.publishOneOffice('Could not find the dentist office')
     }
   } catch (e) {
     console.log(e.message)

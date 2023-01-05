@@ -1,7 +1,9 @@
 module.exports = { addDentist }
 const Office = require('../booking-management/models/dentistOffice')
-async function addDentist (payload) {
+
+async function addDentist (topic, payload) {
   const userInfo = JSON.parse(payload.toString())
+  console.log(userInfo)
   const { officeId, dentistId } = userInfo
   const findOffice = await Office.findOne({ id: officeId })
   if (findOffice.dentists > findOffice.listDentists.length) {
