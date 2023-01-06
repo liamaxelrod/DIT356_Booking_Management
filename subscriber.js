@@ -125,7 +125,7 @@ function loadChecker (topic, message) {
   return new Promise((resolve, reject) => {
     myFuncCalls++
     console.log(myFuncCalls)
-    if (myFuncCalls < 10) {
+    if (myFuncCalls < 15) {
       tokenHandler(topic, message)
       resolve()
     } else {
@@ -133,7 +133,6 @@ function loadChecker (topic, message) {
       reject()
       loadTimer()
     }
-    console.log('load testing')
   })
 }
 

@@ -6,12 +6,10 @@ const publisher = require('../publisher')
 function filterTopic (topic, message) {
   if (topic === 'dentistimo/dentist/breaks') {
     availabilityFilter(topic, message)
-  } else if (topic === 'dentistimo/booking/lunch') {
-    console.log(message)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments') {
     getAppointmentsDentist(message)
   } else if (topic === 'dentistimo/dentist-appointment/get-all-appointments-day') {
-    getAppointmentsDentistDay(message)
+    getAppointmentsDentistDay(topic, message)
   } else if (topic === 'dentistimo/booking/delete-break') {
     deleteFilter(message)
   } else {
@@ -217,13 +215,14 @@ async function getAppointmentsDentist (message) {
 }
 
 // Get all appointments for a dentist a certain day
-async function getAppointmentsDentistDay (message) {
+async function getAppointmentsDentistDay (topic, message) {
   try {
+    const idToken = message.idToken
     if (message.dentistid != null && message.date != null) {
       const AppointmentsDay = await Booking.find({ dentistid: message.dentistid, date: message.date })
       // Checks that the query response is not empty
       if (AppointmentsDay.length) {
-        publisher.publishAllDentistAppointmentsDay(AppointmentsDay)
+        publisher.publishAllDentistAppointmentsDay(idToken, AppointmentsDay)
       } else {
         console.log('Could not find any appointments that day')
       }

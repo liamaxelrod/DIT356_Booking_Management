@@ -75,11 +75,12 @@ async function getOffices () {
 
 // Function for getting one office
 async function getOneOffice (message) {
+  const idToken = message.idToken
   try {
     // Find office with id as identifier
     const findOffice = await Office.findOne({ id: message.id })
     if (findOffice != null) {
-      publisher.publishOneOffice(findOffice)
+      publisher.publishOneOffice(idToken, findOffice)
     } else {
       publisher.publishOneOffice('Could not find the dentist office')
     }

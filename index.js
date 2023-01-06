@@ -69,3 +69,8 @@ client.on('offline', function () {
 client.on('close', function () {
   console.log('Connection closed by client')
 })
+
+process.on('uncaughtException', function () {
+  // console.error(err)
+  // console.log('Node NOT Exiting...')
+})
