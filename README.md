@@ -32,8 +32,8 @@ The application is now running and you can use it to send and receive messages t
 
 ## Authors and acknowledgment
 
-Authors
-Albin Karlsson
+Authors: \
+Albin Karlsson \
 Erik Lindmaa
 
 ## License
