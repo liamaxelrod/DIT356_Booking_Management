@@ -11,9 +11,6 @@ const addNewDentist = require('../booking-management/addDentist')
 const CircuitBreaker = require('opossum')
 let myFuncCalls = 0
 
-// const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
-// const port = '8883'
-
 const host = 'broker.emqx.io'
 const port = '1883'
 
@@ -22,11 +19,10 @@ const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  // username: 'group6_dentistimo',
-  // password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
 
+// Authentication topics
 const requestTopic = 'dentistimo/authentication'
 const responseTopic = 'dentistimo/authentication/response'
 
@@ -120,12 +116,19 @@ function subscribeTopic () {
   })
 }
 
+// Circuit breaker control options
+const options = {
+  timeout: 3000, // If our function takes longer than 3 seconds, trigger a failure
+  errorThresholdPercentage: 25, // When 25% of requests fail, trip the circuit
+  resetTimeout: 15000 // After 15 seconds, try again.
+}
+
 // Send to another filter
 function loadChecker (topic, message) {
   return new Promise((resolve, reject) => {
     myFuncCalls++
     console.log(myFuncCalls)
-    if (myFuncCalls < 15) {
+    if (myFuncCalls < 20) {
       tokenHandler(topic, message)
       resolve()
     } else {
@@ -229,11 +232,4 @@ async function handleRequest (topic, payload) {
   } else {
     console.log('Not a correct topic')
   }
-}
-
-// Circuit breaker control options
-const options = {
-  timeout: 3000, // If our function takes longer than 3 seconds, trigger a failure
-  errorThresholdPercentage: 25, // When 25% of requests fail, trip the circuit
-  resetTimeout: 15000 // After 15 seconds, try again.
 }

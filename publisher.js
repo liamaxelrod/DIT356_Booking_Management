@@ -2,10 +2,7 @@
 module.exports = { publishTopic, publishAvailableAppointments, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
 
 const mqtt = require('mqtt')
-// const host = 'e33e41c289ad4ac69ae5ef60f456e9c3.s2.eu.hivemq.cloud'
-// const port = '8883'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
-// const dentistOffices = require('../booking-management/models/dentistOffice')
 
 const host = 'broker.emqx.io'
 const port = '1883'
@@ -15,8 +12,6 @@ const client = mqtt.connect(connectUrl, {
   clientId,
   clean: true,
   connectTimeout: 4000,
-  // username: 'group6_dentistimo',
-  // password: 'dentistimo123!',
   reconnectPeriod: 1000
 })
 
@@ -86,6 +81,7 @@ function publishAllOffices (message) {
   })
 }
 
+// Publisher to publish information of one office
 function publishOneOffice (idToken, message) {
   const foundOfficeTopic = `${'dentistimo/dentist-office/one-office'}/${idToken}`
   client.publish(foundOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
@@ -95,6 +91,7 @@ function publishOneOffice (idToken, message) {
   })
 }
 
+// Publisher for all offices that a user wants to see after choosing a time interval
 function publishFilteredOffices (message) {
   const filteredOfficeTopic = `${'dentistimo/dentist-office/filtered-office'}/${message.idToken}`
   client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 0, retain: false }, (error) => { // try qos 1, qos 0 works but sends a lot of messages
@@ -104,6 +101,7 @@ function publishFilteredOffices (message) {
   })
 }
 
+// Publisher all appointments belonging to a dentist
 function publishAllDentistAppointments (message, idToken) {
   const foundAppointments = `${'dentistimo/dentist-appointment/all-appointments'}/${idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
@@ -112,8 +110,8 @@ function publishAllDentistAppointments (message, idToken) {
     }
   })
 }
-// Publish all appointments a certain dentist have a booked a certaain day
 
+// Publish all appointments a certain dentist have a booked a certaain day
 function publishAllDentistAppointmentsDay (idToken, message) {
   const foundAppointments = `${'dentistimo/dentist-appointment/all-appointments-day'}/${idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
@@ -154,6 +152,7 @@ function publishDeletedBreak (message) {
   })
 }
 
+// Publisher for all availabale appointments
 function publishAvailableAppointments (message) {
   const foundAppointments = `${'dentistimo/dentist/free-appointments'}/${message.idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
