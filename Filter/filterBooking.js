@@ -85,16 +85,24 @@ async function getAppointmentsUserDay (message) {
 }
 
 // Get all appointments for a user
+// Get all appointments for a user
 async function getAppointmentsUser (message) {
   try {
     if (message.userid != null) {
-    // Find bookings with userid as identifier
+      let findOfficeInfo
+      // Find bookings with userid as identifier
       const filter = { userid: message.userid }
-      const getAppointments = await Booking.find(filter)
+      let getAppointments = await Booking.find(filter)
+      for (let i = 0; i < getAppointments.length; i++) {
+        findOfficeInfo = getAppointments[i].dentistOfficeId
+        const Officefilter = { id: findOfficeInfo }
+        const getOffices = await Office.findOne(Officefilter)
+        getAppointments[i] = { date: getAppointments[i].date, time: getAppointments[i].time, address: getOffices.address, visitReason: getAppointments[i].visitReason, name: getOffices.name }
+      }
+      getAppointments = JSON.stringify(getAppointments)
       // Checks that the query response is not empty
       if (getAppointments.length) {
-        const idToken = message.idToken
-        publisher.publishAllUserAppointments(getAppointments, idToken)
+        publisher.publishAllUserAppointments(getAppointments, message.idToken)
       } else {
         console.log('Could not find any appointments')
         const message = 'Could not find any appointments'
