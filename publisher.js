@@ -1,5 +1,5 @@
 
-module.exports = { publishTopic, publishAvailableAppointments, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
+module.exports = { errorPublisher, publishTopic, publishAvailableAppointments, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
 
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
@@ -29,7 +29,8 @@ function publishTopic () {
 }
 
 // Post deleted bookings
-function publishDeletedBooking (topic) {
+function publishDeletedBooking (topic, idToken) {
+  topic = `${topic}/${idToken}`
   const pubMessage = 'Booking has succesfully been removed'
   client.publish(topic, pubMessage, { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -92,8 +93,9 @@ function publishOneOffice (idToken, message) {
 }
 
 // Publisher for all offices that a user wants to see after choosing a time interval
-function publishFilteredOffices (message) {
-  const filteredOfficeTopic = `${'dentistimo/dentist-office/filtered-office'}/${message.idToken}`
+function publishFilteredOffices (message, payload) {
+  const idToken = payload.idToken
+  const filteredOfficeTopic = `${'dentistimo/dentist-office/filtered-office'}/${idToken}`
   client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 0, retain: false }, (error) => { // try qos 1, qos 0 works but sends a lot of messages
     if (error) {
       console.error(error)
@@ -122,8 +124,8 @@ function publishAllDentistAppointmentsDay (idToken, message) {
 }
 
 // Publish all appointments a user have a certain day.
-function publishAllUserAppointmentsDay (message) {
-  const foundAppointments = `${'dentistimo/user-appointment/all-appointments-day'}/${message.idToken}`
+function publishAllUserAppointmentsDay (message, idToken) {
+  const foundAppointments = `${'dentistimo/user-appointment/all-appointments-day'}/${idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
@@ -153,9 +155,20 @@ function publishDeletedBreak (message) {
 }
 
 // Publisher for all availabale appointments
-function publishAvailableAppointments (message) {
-  const foundAppointments = `${'dentistimo/dentist/free-appointments'}/${message.idToken}`
+function publishAvailableAppointments (message, payload) {
+  const idToken = payload.idToken
+  const foundAppointments = `${'dentistimo/dentist/free-appointments'}/${idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+    if (error) {
+      console.error(error)
+    }
+  })
+}
+
+// Publish all appointments a certain dentist have a booked a certaain day
+function errorPublisher (idToken, message) {
+  const publishError = `${'dentistimo/error'}/${idToken}`
+  client.publish(publishError, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

@@ -123,14 +123,15 @@ const options = {
   resetTimeout: 15000 // After 15 seconds, try again.
 }
 
-// Send to another filter
+// Checks amount of incoming messages
 function loadChecker (topic, message) {
   return new Promise((resolve, reject) => {
     myFuncCalls++
-    console.log(myFuncCalls)
+    // console.log(myFuncCalls)
     if (myFuncCalls < 20) {
       tokenHandler(topic, message)
       resolve()
+      loadTimer()
     } else {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject()
@@ -141,7 +142,7 @@ function loadChecker (topic, message) {
 
 // Functions for putting a timer on the load balancing and making it 0 after a given time.
 function loadTimer () {
-  setTimeout(makeZero, 7000)
+  setTimeout(makeZero, 10000)
 }
 function makeZero () {
   myFuncCalls = 0
@@ -171,7 +172,7 @@ client.on('message', async (topic, payload) => {
       circuitBreaker.on('success', () => {
         if (state !== 'closed') {
           circuitBreaker.close()
-          console.log('Circuitbreaker closed')
+          // console.log('Circuitbreaker closed')
           state = 'closed'
         }
       }

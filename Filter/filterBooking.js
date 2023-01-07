@@ -1,6 +1,6 @@
 const Booking = require('../models/booking')
 const publisher = require('../publisher')
-module.exports = { filterTopic, deleteFilter, saveAppointment }
+module.exports = { filterTopic, saveAppointment }
 const Office = require('../models/dentistOffice')
 
 // Send to another filter
@@ -26,32 +26,6 @@ function saveAppointment (topic, message) {
   })
   // Publish message
   publisher.publishBookingDate(topic, message)
-}
-
-// Delete booking filter
-function deleteFilter (message) {
-  console.log(message.issuance)
-  if (message.issuance != null) {
-    deleteBooking(message)
-  } else {
-    console.log('Message does not include issuance')
-  }
-}
-
-async function deleteBooking (message) {
-  try {
-    // Delete booking with issuance as identifier
-    const findBooking = await Booking.findOne({ issuance: message.issuance })
-    if (findBooking != null) {
-      await Booking.deleteOne({ issuance: message.issuance })
-      const deletedBookingTopic = 'dentistimo/booking/deleted-booking'
-      publisher.publishDeletedBooking(deletedBookingTopic)
-    } else {
-      console.log('Could not find booking')
-    }
-  } catch (e) {
-    console.log(e.message)
-  }
 }
 
 function OfficeFilter (message) {
@@ -92,13 +66,16 @@ async function getOneOffice (message) {
 // Get all appointments for a user a certain day
 async function getAppointmentsUserDay (message) {
   try {
+    const idToken = message.idToken
     if (message.userid != null && message.date != null) {
       const AppointmentsDay = await Booking.find({ userid: message.userid, date: message.date })
       // Checks that the query response is not empty
       if (AppointmentsDay.length) {
-        publisher.publishAllUserAppointmentsDay(AppointmentsDay)
+        publisher.publishAllUserAppointmentsDay(AppointmentsDay, idToken)
       } else {
         console.log('Could not find any appointments that day')
+        const message = 'Could not find any appointments that day'
+        publisher.errorPublisher(message.idToken, message)
       }
     }
   } catch (e) {
@@ -118,6 +95,8 @@ async function getAppointmentsUser (message) {
         publisher.publishAllUserAppointments(getAppointments)
       } else {
         console.log('Could not find any appointments')
+        const message = 'Could not find any appointments'
+        publisher.errorPublisher(message.idToken, message)
       }
     }
   } catch (e) {

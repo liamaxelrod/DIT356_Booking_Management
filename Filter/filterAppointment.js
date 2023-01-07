@@ -48,7 +48,9 @@ function availabilityFilter (topic, message) {
         if (checkId) {
           await filterMakeAppointment(topic, message)
         } else {
-          console.log('Error, invalid')
+          console.log('Could not find any appointments')
+          const message = 'Could not find any appointments'
+          publisher.errorPublisher(message.idToken, message)
         }
       })
     } catch (e) {
@@ -57,6 +59,8 @@ function availabilityFilter (topic, message) {
   }
   if (message.date === '' || null) {
     console.log('No date')
+    const message = 'No date'
+    publisher.errorPublisher(message.idToken, message)
   } else {
     checkAvailability(topic, message)
   }
@@ -79,9 +83,13 @@ function filterMakeAppointment (topic, message) {
         saveAppointment(topic, message)
       } else {
         console.log('Too many bookings')
+        const message = 'Too many bookings'
+        publisher.errorPublisher(message.idToken, message)
       }
     } else {
       console.log('It is not available')
+      const message = 'It is not available'
+      publisher.errorPublisher(message.idToken, message)
     }
   })
 }
@@ -102,19 +110,24 @@ function deleteFilter (message) {
     deleteBooking(message)
   } else {
     console.log('Message does not include issuance')
+    const message = 'Message does not include issuance'
+    publisher.errorPublisher(message.idToken, message)
   }
 }
 
 async function deleteBooking (message) {
   try {
+    const idToken = message.idToken
     // Delete booking with issuance as identifier
     const findBooking = await Booking.findOne({ issuance: message.issuance })
     if (findBooking != null) {
       await Booking.deleteOne({ issuance: message.issuance })
       const deletedBookingTopic = 'dentistimo/booking/deleted-booking'
-      publisher.publishDeletedBooking(deletedBookingTopic)
+      publisher.publishDeletedBooking(deletedBookingTopic, idToken)
     } else {
-      console.log('Could not find booking')
+      console.log('Message does not include issuance')
+      const message = 'Message does not include issuance'
+      publisher.errorPublisher(message.idToken, message)
     }
   } catch (e) {
     console.log(e.message)

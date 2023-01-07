@@ -56,6 +56,7 @@ function checkHours (topic, payload, weekday) {
         timeSlots.push(i + ':30')
       }
     }
+    console.log(timeSlots)
     const inputDentistOfficeId = payload.dentistOfficeId
     const inputDate = payload.date
     const allAppointments = await Booking.find({ date: inputDate, dentistOfficeId: inputDentistOfficeId })
@@ -79,6 +80,7 @@ function checkHours (topic, payload, weekday) {
         dif = dif - 1
       }
     }
+    console.log(freeTimeSlots, 'ad')
     removeDuplicates(freeTimeSlots)
 
     // readInput(array)

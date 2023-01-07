@@ -84,7 +84,7 @@ async function checkHours (fromInput, toInput, topic, payload, weekday) {
     const dentistOffice = openingHoursDay[i]
     const filter = { id: dentistOffice }
     const officesToPublish = await dentistOffices.find(filter)
-    publisher.publishFilteredOffices(officesToPublish)
+    publisher.publishFilteredOffices(officesToPublish, payload)
   }
 }
 
