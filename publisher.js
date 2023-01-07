@@ -44,7 +44,7 @@ function publishBookingDate (topic, message) {
   topic = `${'dentistimo/booking/succesful-booking'}/${message.idToken}`
   let pubMessage
   if (message !== null) {
-    pubMessage = ('Successful booking' + '\nDate: ' + message.date + '\nTime: ' + message.time)
+    pubMessage = ('Successful booking' + 'Date: ' + message.date + 'Time: ' + message.time + 'Reason: ' + message.visitReason)
   } else {
     pubMessage = 'Booking unavailable'
   }
@@ -84,6 +84,8 @@ function publishAllOffices (message) {
 
 // Publisher to publish information of one office
 function publishOneOffice (idToken, message) {
+  console.log(idToken)
+  console.log(JSON.stringify(message))
   const foundOfficeTopic = `${'dentistimo/dentist-office/one-office'}/${idToken}`
   client.publish(foundOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -125,6 +127,7 @@ function publishAllDentistAppointmentsDay (idToken, message) {
 
 // Publish all appointments a user have a certain day.
 function publishAllUserAppointmentsDay (message, idToken) {
+  console.log(message)
   const foundAppointments = `${'dentistimo/user-appointment/all-appointments-day'}/${idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -134,8 +137,8 @@ function publishAllUserAppointmentsDay (message, idToken) {
 }
 
 // Publish all appointments for a user.
-function publishAllUserAppointments (message) {
-  const foundAppointments = `${'dentistimo/user-appointment/all-appointments'}/${message.idToken}`
+function publishAllUserAppointments (message, idToken) {
+  const foundAppointments = `${'dentistimo/user-appointment/all-appointments'}/${idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
@@ -158,7 +161,7 @@ function publishDeletedBreak (message) {
 function publishAvailableAppointments (message, payload) {
   const idToken = payload.idToken
   const foundAppointments = `${'dentistimo/dentist/free-appointments'}/${idToken}`
-  client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
+  client.publish(foundAppointments, JSON.stringify(message), { qos: 2, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

@@ -12,6 +12,7 @@ const client = mqtt.connect(connectUrl, {
   connectTimeout: 4000,
   reconnectPeriod: 1000
 })
+// const dentistOffices = require('../booking-management/models/dentistOffice')
 
 // Set up default mongoose connection
 const mongoURI = process.env.MONGODB_URI

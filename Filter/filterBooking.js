@@ -31,7 +31,7 @@ function saveAppointment (topic, message) {
 function OfficeFilter (message) {
   if (message.message === 'get_all_offices') {
     getOffices()
-  } else if (message.id != null) {
+  } else if (message.dentistOfficeId != null) {
     getOneOffice(message)
   }
 }
@@ -49,10 +49,11 @@ async function getOffices () {
 
 // Function for getting one office
 async function getOneOffice (message) {
-  const idToken = message.idToken
   try {
+    const idToken = message.idToken
     // Find office with id as identifier
-    const findOffice = await Office.findOne({ id: message.id })
+    const idOffice = message.dentistOfficeId
+    const findOffice = await Office.findOne({ id: idOffice })
     if (findOffice != null) {
       publisher.publishOneOffice(idToken, findOffice)
     } else {
@@ -92,7 +93,8 @@ async function getAppointmentsUser (message) {
       const getAppointments = await Booking.find(filter)
       // Checks that the query response is not empty
       if (getAppointments.length) {
-        publisher.publishAllUserAppointments(getAppointments)
+        const idToken = message.idToken
+        publisher.publishAllUserAppointments(getAppointments, idToken)
       } else {
         console.log('Could not find any appointments')
         const message = 'Could not find any appointments'

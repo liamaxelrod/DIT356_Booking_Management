@@ -1,9 +1,10 @@
 module.exports = { testFunction }
 const Booking = require('./models/booking')
 const publisher = require('../booking-management/publisher')
+const Office = require('../booking-management/models/dentistOffice')
 
 // This filter will check the availability, similarly to the booking appointment
-function testFunction (topic, message) {
+async function testFunction (topic, message) {
   const d = new Date(message.date)
   const day = d.getDay()
   // If weekday: continue. If weekend: Terminate, hashmap the days into matching day
@@ -15,14 +16,14 @@ function testFunction (topic, message) {
     dayMap.set(4, 'thursday')
     dayMap.set(5, 'friday')
     const weekday = dayMap.get(day)
-    checkHours(topic, message, weekday)
+    await checkHours(message, weekday)
   } else {
     console.log('Weekend') // Add error message
   }
 }
 
 // Find offices with matching opening hours on given date
-function checkHours (topic, payload, weekday) {
+async function checkHours (payload, weekday) {
   dentists.filter(async function (obj) {
     let checkFrom = 0
     let numDentists = 0
@@ -50,38 +51,44 @@ function checkHours (topic, payload, weekday) {
     checkTo = checkTo[1]
     checkTo = parseFloat(checkTo)
     const timeSlots = []
-    for (let i = checkFrom; i <= checkTo - 1; i++) {
-      for (let j = 0; j < numDentists; j++) {
-        timeSlots.push(i + ':00')
-        timeSlots.push(i + ':30')
-      }
-    }
-    console.log(timeSlots)
+
     const inputDentistOfficeId = payload.dentistOfficeId
     const inputDate = payload.date
     const allAppointments = await Booking.find({ date: inputDate, dentistOfficeId: inputDentistOfficeId })
-
     const idArray = []
     const timeArray = []
+
     for (let i = 0; i < allAppointments.length; i++) {
       idArray.push(allAppointments[i].dentistid)
       timeArray.push(allAppointments[i].time)
     }
-
-    const stringAppointment = JSON.stringify(allAppointments)
+    console.log('albin')
+    console.log(payload)
     const freeTimeSlots = []
-
-    let dif = numDentists - idArray.length
-    for (let i = 0; i <= timeSlots.length - 1; i++) {
-      if (!stringAppointment.includes(timeSlots[i])) {
-        freeTimeSlots.push(timeSlots[i])
-      } else if (dif > 0) {
-        freeTimeSlots.push(timeSlots[i])
-        dif = dif - 1
+    const officeId = payload.dentistOfficeId
+    let dentistLength = await Office.findOne({ id: officeId })
+    dentistLength = dentistLength.dentists
+    console.log(dentistLength)
+    for (let i = checkFrom; i <= checkTo - 1; i++) {
+      for (let j = 0; j < dentistLength; j++) {
+        timeSlots.push(i + ':00')
+        timeSlots.push(i + ':30')
       }
     }
-    console.log(freeTimeSlots, 'ad')
-    removeDuplicates(freeTimeSlots)
+    // let dif = numDentists - idArray.length
+    // console.log(dif, 'diff')
+    for (let i = 0; i <= timeSlots.length - 1; i++) {
+      if (!timeArray.includes(timeSlots[i]) || timeArray.includes(timeSlots[i])) {
+        freeTimeSlots.push(timeSlots[i])
+      }
+      if (timeArray.includes(timeSlots[i])) {
+        if (timeArray.length >= numDentists) {
+          freeTimeSlots.pop(timeSlots[i])
+        }
+      }
+    }
+    console.log(freeTimeSlots)
+    await removeDuplicates(freeTimeSlots, payload)
 
     // readInput(array)
     return (checkFrom, checkTo)
@@ -92,19 +99,20 @@ function checkHours (topic, payload, weekday) {
 
 // If there are more than 1 dentist we still wanna publish only ONE available appointment until all dentists are booked,
 // so we filter out duplicates when there are two available dentists for the frontend
-function removeDuplicates (arr) {
+function removeDuplicates (arr, payload) {
   const unique = []
   arr.forEach(element => {
     if (!unique.includes(element)) {
       unique.push(element)
     }
   })
-  availableTimeSlots(unique)
+  console.log(unique)
+  availableTimeSlots(unique, payload)
 }
 
 // Finished array ready to be sent to the frontend
-function availableTimeSlots (array) {
-  publisher.publishAvailableAppointments(array)
+function availableTimeSlots (array, payload) {
+  publisher.publishAvailableAppointments(array, payload)
 }
 
 // Temp array copy of the dentist offices
