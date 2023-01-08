@@ -11,9 +11,11 @@ The component also has a circuit breaker implementation to handle cases where a 
 
 ## Visuals
 
-Diagram
+Diagrams
 
 ![Logo](./img/Pipe-Filter.jpg "Pipe-filter Diagram")
+
+![Logo](./img/Sequence_Diagram_v.2.jpg "Sequence Diagram")
 
 ## Installation
 
