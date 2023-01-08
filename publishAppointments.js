@@ -68,8 +68,13 @@ async function checkHours (payload, weekday) {
     dentistLength = dentistLength.dentists
     for (let i = checkFrom; i <= checkTo - 1; i++) {
       for (let j = 0; j < dentistLength; j++) {
-        timeSlots.push(i + ':00')
-        timeSlots.push(i + ':30')
+        if (i < 10) {
+          timeSlots.push('0' + i + ':00')
+          timeSlots.push('0' + i + ':30')
+        } else {
+          timeSlots.push(i + ':00')
+          timeSlots.push(i + ':30')
+        }
       }
     }
     for (let i = 0; i <= timeSlots.length - 1; i++) {

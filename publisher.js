@@ -82,7 +82,7 @@ function publishOneOffice (idToken, message) {
 function publishFilteredOffices (message, payload) {
   const idToken = payload.idToken
   const filteredOfficeTopic = `${'dentistimo/dentist-office/filtered-office'}/${idToken}`
-  client.publish(filteredOfficeTopic, (JSON.stringify(message)), { qos: 0, retain: false }, (error) => { // try qos 1, qos 0 works but sends a lot of messages
+  client.publish(filteredOfficeTopic, (JSON.stringify(message)), { qos: 0, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }

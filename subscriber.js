@@ -228,7 +228,7 @@ async function handleRequest (topic, payload) {
   } else if (topic === 'dentistimo/add-dentist') {
     addNewDentist.addDentist(topic, payload)
   } else if (topic === 'dentistimo/authentication/response') {
-    console.log()
+    console.log('Authentication response')
   } else {
     console.log('Not a correct topic')
   }
