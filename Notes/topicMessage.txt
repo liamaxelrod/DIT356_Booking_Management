@@ -1,7 +1,0 @@
-topic: dentistimo/dentist-office/fetch-availability
-Example: 
-{
-  "date": "December 12, 2022",
-  "from": "08:00:00",
-  "to": "13:00:00"
-}

@@ -1,7 +1,7 @@
 const dentistOffices = require('../models/dentistOffice')
 const publisher = require('../publisher')
 module.exports = { filterTopic }
-// Testing
+
 // Send to another filter
 function filterTopic (topic, message) {
   if (topic === 'dentistimo/dentist-office/fetch-availability') {
@@ -13,7 +13,6 @@ function filterTopic (topic, message) {
 
 // This filter will check the availability, similarly to the booking appointment
 function checkAvailabilityFilter (topic, message) {
-  message = JSON.parse(message)
   const d = new Date(message.date)
   const day = d.getDay()
 
@@ -80,12 +79,13 @@ async function checkHours (fromInput, toInput, topic, payload, weekday) {
     return obj.id
   })
   // Publish to the broker the offices that have passed the filtration
+  const officesToPublish = []
   for (let i = 0; i <= openingHoursDay.length - 1; i++) {
     const dentistOffice = openingHoursDay[i]
     const filter = { id: dentistOffice }
-    const officesToPublish = await dentistOffices.find(filter)
-    publisher.publishFilteredOffices(officesToPublish)
+    officesToPublish[i] = await dentistOffices.findOne(filter)
   }
+  publisher.publishFilteredOffices(officesToPublish, payload)
 }
 
 // Temp array copy of the dentist offices

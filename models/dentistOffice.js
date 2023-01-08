@@ -7,6 +7,7 @@ const dentistOfficeSchema = new Schema({
   name: { type: String },
   owner: { type: String },
   dentists: { type: Number },
+  listDentists: [Number],
   address: { type: String },
   city: { type: String },
   coordinate: {
