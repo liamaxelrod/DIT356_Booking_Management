@@ -44,7 +44,7 @@ The application is now running and you can use it to send and receive messages t
 
 - **Simplicity** The pipe and filter allows for simplicity of the structure of this component. Filters are small and understandable and usually perform one or few tasks. It also allows for reusability of certain filters where needed. 
 
-## The contents of the component
+### The contents of the component
 - Most significant files that makes up the booking management component:
 
     - **index.js** The main file that runs when starting the component.
