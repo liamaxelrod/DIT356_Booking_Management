@@ -10,11 +10,11 @@ function filterTopic (topic, message) {
   } else if (topic === 'dentistimo/booking/delete-booking') {
     deleteFilter(message)
   } else {
-    console.log('Unable to read topic 1')
+    console.log('Unable to read topic')
   }
 }
 
-// Check date, time and dentist is available in databse
+// Check date, time and dentist is available in database
 function availabilityFilter (topic, message) {
   async function checkAvailability (topic, message) {
     try {

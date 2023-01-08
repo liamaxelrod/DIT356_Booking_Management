@@ -172,7 +172,7 @@ client.on('message', async (topic, payload) => {
       circuitBreaker.on('success', () => {
         if (state !== 'closed') {
           circuitBreaker.close()
-          // console.log('Circuitbreaker closed')
+          console.log('Circuitbreaker closed')
           state = 'closed'
         }
       }

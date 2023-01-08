@@ -53,7 +53,7 @@ async function checkAvailability (topic, message) {
       const idToken = message.idToken
       message = ('You cannot book a break on a weekend')
       publisher.errorPublisher(idToken, message)
-      console.log('Weekend') // Add error message
+      console.log('Weekend')
     }
   } catch (e) {
     console.log(e.message)
@@ -165,7 +165,6 @@ async function LunchControl (topic, message) {
 
 // Delete booking filter
 function deleteFilter (message) {
-  console.log(message.dentistid)
   if (message.dentistid != null) {
     deleteBreak(message)
   } else {
@@ -188,7 +187,6 @@ async function deleteBreak (message) {
         await Booking.deleteOne({ dentistid: message.dentistid, date: message.date, time: message.time })
         const deletedBreakTopic = 'dentistimo/booking/deleted-break'
         const idToken = message.idToken
-        console.log(idToken)
         publisher.publishDeletedBreak(deletedBreakTopic, idToken)
       }
     } else {

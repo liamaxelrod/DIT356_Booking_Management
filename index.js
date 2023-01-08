@@ -16,7 +16,7 @@ const client = mqtt.connect(connectUrl, {
 
 // Set up default mongoose connection
 const mongoURI = process.env.MONGODB_URI
-// const mongoURI = 'mongodb://127.0.0.1:27017/Dentistimo'
+
 // Connect to MongoDB
 mongoose.connect(
   mongoURI,
@@ -66,6 +66,4 @@ client.on('close', function () {
 })
 
 process.on('uncaughtException', function () {
-  // console.error(err)
-  // console.log('Node NOT Exiting...')
 })

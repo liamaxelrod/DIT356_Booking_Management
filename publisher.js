@@ -64,7 +64,6 @@ function publishBreakFika (topic, message) {
     breakTopic = `${'dentistimo/dentist/lunch-booked'}/${message.idToken}`
   }
   const pubMessage = ('Successful break registered: ' + { dentistid: message.dentistid, appointmentType: message.appointmentType, date: message.date, time: message.time })
-  console.log(breakTopic)
   client.publish(breakTopic, (JSON.stringify(pubMessage)), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
@@ -84,8 +83,6 @@ function publishAllOffices (message) {
 
 // Publisher to publish information of one office
 function publishOneOffice (idToken, message) {
-  console.log(idToken)
-  console.log(JSON.stringify(message))
   const foundOfficeTopic = `${'dentistimo/dentist-office/one-office'}/${idToken}`
   client.publish(foundOfficeTopic, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {
@@ -127,7 +124,6 @@ function publishAllDentistAppointmentsDay (idToken, message) {
 
 // Publish all appointments a user have a certain day.
 function publishAllUserAppointmentsDay (message, idToken) {
-  console.log(message)
   const foundAppointments = `${'dentistimo/user-appointment/all-appointments-day'}/${idToken}`
   client.publish(foundAppointments, JSON.stringify(message), { qos: 1, retain: false }, (error) => {
     if (error) {

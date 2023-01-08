@@ -62,21 +62,16 @@ async function checkHours (payload, weekday) {
       idArray.push(allAppointments[i].dentistid)
       timeArray.push(allAppointments[i].time)
     }
-    console.log('albin')
-    console.log(payload)
     const freeTimeSlots = []
     const officeId = payload.dentistOfficeId
     let dentistLength = await Office.findOne({ id: officeId })
     dentistLength = dentistLength.dentists
-    console.log(dentistLength)
     for (let i = checkFrom; i <= checkTo - 1; i++) {
       for (let j = 0; j < dentistLength; j++) {
         timeSlots.push(i + ':00')
         timeSlots.push(i + ':30')
       }
     }
-    // let dif = numDentists - idArray.length
-    // console.log(dif, 'diff')
     for (let i = 0; i <= timeSlots.length - 1; i++) {
       if (!timeArray.includes(timeSlots[i]) || timeArray.includes(timeSlots[i])) {
         freeTimeSlots.push(timeSlots[i])
@@ -87,7 +82,6 @@ async function checkHours (payload, weekday) {
         }
       }
     }
-    console.log(freeTimeSlots)
     await removeDuplicates(freeTimeSlots, payload)
 
     // readInput(array)
@@ -106,7 +100,6 @@ function removeDuplicates (arr, payload) {
       unique.push(element)
     }
   })
-  console.log(unique)
   availableTimeSlots(unique, payload)
 }
 

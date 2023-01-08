@@ -14,7 +14,7 @@ function filterTopic (topic, message) {
   } else if (topic === 'dentistimo/user-appointment/get-all-appointments') {
     getAppointmentsUser(message)
   } else {
-    console.log('Unable to read topic 1')
+    console.log('Unable to read topic')
   }
 }
 
@@ -84,7 +84,6 @@ async function getAppointmentsUserDay (message) {
   }
 }
 
-// Get all appointments for a user
 // Get all appointments for a user
 async function getAppointmentsUser (message) {
   try {
