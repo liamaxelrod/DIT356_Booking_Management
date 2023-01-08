@@ -1,5 +1,5 @@
 
-module.exports = { errorPublisher, publishTopic, publishAvailableAppointments, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
+module.exports = { errorPublisher, publishAvailableAppointments, publishDeletedBooking, publishBookingDate, publishBreakFika, publishAllOffices, publishOneOffice, publishAllDentistAppointments, publishAllDentistAppointmentsDay, publishAllUserAppointmentsDay, publishFilteredOffices, publishAllUserAppointments, publishDeletedBreak }
 
 const mqtt = require('mqtt')
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
@@ -14,19 +14,6 @@ const client = mqtt.connect(connectUrl, {
   connectTimeout: 4000,
   reconnectPeriod: 1000
 })
-
-const topic = 'my/test/topic'
-
-function publishTopic () {
-  // const topic1 = '/nodejs/albin'
-  client.on('connect', () => {
-    client.publish(topic, 'nodejs mqtt test', { qos: 1, retain: false }, (error) => {
-      if (error) {
-        console.error(error)
-      }
-    })
-  })
-}
 
 // Post deleted bookings
 function publishDeletedBooking (topic, idToken) {

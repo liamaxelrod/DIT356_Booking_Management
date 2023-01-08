@@ -94,13 +94,13 @@ async function checkHours (payload, weekday) {
 // If there are more than 1 dentist we still wanna publish only ONE available appointment until all dentists are booked,
 // so we filter out duplicates when there are two available dentists for the frontend
 function removeDuplicates (arr, payload) {
-  const unique = []
+  const uniqueAppointments = []
   arr.forEach(element => {
-    if (!unique.includes(element)) {
-      unique.push(element)
+    if (!uniqueAppointments.includes(element)) {
+      uniqueAppointments.push(element)
     }
   })
-  availableTimeSlots(unique, payload)
+  availableTimeSlots(uniqueAppointments, payload)
 }
 
 // Finished array ready to be sent to the frontend

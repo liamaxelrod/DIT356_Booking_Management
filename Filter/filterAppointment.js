@@ -30,15 +30,15 @@ function availabilityFilter (topic, message) {
       for (let i = 0; i < listOfDentists.length; i++) {
         idArray = (listOfDentists[i].listDentists)
       }
-      const testArray = []
+      const officeDentists = []
       for (let i = 0; i < checkDentist.length; i++) {
-        testArray.push(checkDentist[i].dentistid)
+        officeDentists.push(checkDentist[i].dentistid)
       }
-      const freeDentist = (compareArrays(idArray, testArray))
+      const freeDentist = (compareArrays(idArray, officeDentists))
 
-      const test = Math.floor(Math.random() * (freeDentist.length))
+      const randomDentist = Math.floor(Math.random() * (freeDentist.length))
 
-      const checkId = freeDentist[test]
+      const checkId = freeDentist[randomDentist]
 
       // Find booking with date, time and dentist as identifier
       Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkId }, async function (_err, checkDate, checkTime, checkID) {

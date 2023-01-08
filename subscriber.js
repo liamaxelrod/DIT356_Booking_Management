@@ -127,7 +127,6 @@ const options = {
 function loadChecker (topic, message) {
   return new Promise((resolve, reject) => {
     myFuncCalls++
-    // console.log(myFuncCalls)
     if (myFuncCalls < 20) {
       tokenHandler(topic, message)
       resolve()
