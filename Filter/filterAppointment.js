@@ -5,8 +5,6 @@ const Office = require('../models/dentistOffice')
 
 // Send to another filter
 function filterTopic (topic, message) {
-  console.log('testing')
-  console.log(message)
   if (topic === 'dentistimo/booking/create-booking') {
     availabilityFilter(topic, message)
   } else if (topic === 'dentistimo/booking/delete-booking') {
@@ -96,6 +94,9 @@ function filterMakeAppointment (topic, message) {
 
 // This function will save the appointment in the database
 function saveAppointment (topic, message) {
+  if (message.visitReason === undefined) {
+    message.visitReason = 'Revision'
+  }
   const appointment = new Booking(message)
   appointment.save((_err) => {
     // saved!

@@ -79,12 +79,13 @@ async function checkHours (fromInput, toInput, topic, payload, weekday) {
     return obj.id
   })
   // Publish to the broker the offices that have passed the filtration
+  const officesToPublish = []
   for (let i = 0; i <= openingHoursDay.length - 1; i++) {
     const dentistOffice = openingHoursDay[i]
     const filter = { id: dentistOffice }
-    const officesToPublish = await dentistOffices.find(filter)
-    publisher.publishFilteredOffices(officesToPublish, payload)
+    officesToPublish[i] = await dentistOffices.findOne(filter)
   }
+  publisher.publishFilteredOffices(officesToPublish, payload)
 }
 
 // Temp array copy of the dentist offices

@@ -37,14 +37,24 @@ async function checkAvailability (topic, message) {
         return null
       }
     }
+    const d = new Date(checkDate)
+    const day = d.getDay()
+    // If weekday: continue. If weekend: Terminate, hashmap the days into matching day
+    if (day > 0 && day < 6) {
     // Find booking with date, time and dentist as identifier
-    Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist }, function (_err, checkDate, checkTime, checkDentist) {
-      if (checkDate == null && checkTime == null && checkDentist == null) {
-        checkBreaksFilter(topic, message)
-      } else {
-        console.log('It is not available')
-      }
-    })
+      Booking.findOne({ date: checkDate, time: checkTime, dentistid: checkDentist }, function (_err, checkDate, checkTime, checkDentist) {
+        if (checkDate == null && checkTime == null && checkDentist == null) {
+          checkBreaksFilter(topic, message)
+        } else {
+          console.log('It is not available')
+        }
+      })
+    } else {
+      const idToken = message.idToken
+      message = ('You cannot book a break on a weekend')
+      publisher.errorPublisher(idToken, message)
+      console.log('Weekend') // Add error message
+    }
   } catch (e) {
     console.log(e.message)
   }
@@ -142,6 +152,9 @@ async function LunchControl (topic, message) {
     if (bookingSearch === null) {
       console.log('Available')
     } else {
+      const idToken = message.idToken
+      message = 'Not available'
+      publisher.errorPublisher(idToken, message)
       console.log('Not available')
       return null
     }
@@ -156,6 +169,9 @@ function deleteFilter (message) {
   if (message.dentistid != null) {
     deleteBreak(message)
   } else {
+    const idToken = message.idToken
+    message = 'Message does not include dentistid'
+    publisher.errorPublisher(idToken, message)
     console.log('Message does not include dentistid')
   }
 }
@@ -165,10 +181,20 @@ async function deleteBreak (message) {
     // Delete booking with issuance as identifier
     const findBooking = await Booking.findOne({ dentistid: message.dentistid, date: message.date, time: message.time })
     if (findBooking != null) {
-      await Booking.deleteOne({ dentistid: message.dentistid, date: message.date, time: message.time })
-      const deletedBreakTopic = 'dentistimo/booking/deleted-break'
-      publisher.publishDeletedBreak(deletedBreakTopic)
+      if (findBooking.appointmentType === 'lunch') {
+        await Booking.deleteOne({ dentistid: message.dentistid, date: message.date })
+        await Booking.deleteOne({ dentistid: message.dentistid, date: message.date })
+      } else {
+        await Booking.deleteOne({ dentistid: message.dentistid, date: message.date, time: message.time })
+        const deletedBreakTopic = 'dentistimo/booking/deleted-break'
+        const idToken = message.idToken
+        console.log(idToken)
+        publisher.publishDeletedBreak(deletedBreakTopic, idToken)
+      }
     } else {
+      const idToken = message.idToken
+      message = 'Could not find a registered break'
+      publisher.errorPublisher(idToken, message)
       console.log('Could not find a registered break')
     }
   } catch (e) {

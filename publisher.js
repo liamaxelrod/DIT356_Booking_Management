@@ -98,7 +98,7 @@ function publishOneOffice (idToken, message) {
 function publishFilteredOffices (message, payload) {
   const idToken = payload.idToken
   const filteredOfficeTopic = `${'dentistimo/dentist-office/filtered-office'}/${idToken}`
-  client.publish(filteredOfficeTopic, JSON.stringify(message), { qos: 0, retain: false }, (error) => { // try qos 1, qos 0 works but sends a lot of messages
+  client.publish(filteredOfficeTopic, (JSON.stringify(message)), { qos: 0, retain: false }, (error) => { // try qos 1, qos 0 works but sends a lot of messages
     if (error) {
       console.error(error)
     }
@@ -147,10 +147,10 @@ function publishAllUserAppointments (message, idToken) {
 }
 
 // Post deleted bookings
-function publishDeletedBreak (message) {
-  const deletedAppointments = `${'dentistimo/booking/deleted-break'}/${message.idToken}`
+function publishDeletedBreak (message, idToken) {
+  const deletedAppointments = `${'dentistimo/booking/deleted-break'}/${idToken}`
   const pubMessage = 'The break has succesfully been removed'
-  client.publish(deletedAppointments, pubMessage, { qos: 1, retain: false }, (error) => {
+  client.publish(deletedAppointments, pubMessage.toString(), { qos: 1, retain: false }, (error) => {
     if (error) {
       console.error(error)
     }
