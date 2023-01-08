@@ -48,10 +48,10 @@ The application is now running and you can use it to send and receive messages t
 - Most significant files that makes up the booking management component:
 
     - **index.js** The main file that runs when starting the component.
-    - **addDentist.js** Functionality for adding dentists to the database.
-    - **Publisher.js** Publisher functionality.
-    - **PublisherAppointments.js** Publisher specifically for displaying available appointments to the user.
-    - **Subscriber.js** Subscriber functionality and cointains the circuit breaker for load balancing. 
+    - **addDentist.js** Functionality for adding dentists to a specific office.
+    - **publisher.js** Publisher functionality.
+    - **publishAppointments.js** Publisher specifically for displaying available appointments to the user.
+    - **subscriber.js** Subscriber functionality and cointains the circuit breaker for load balancing. 
     Filters:
 	- **filterAppointments.js** Filters used for displaying available appointments to the user.
     - **filterDentist.js** Filters used for the dentist client functionality.
